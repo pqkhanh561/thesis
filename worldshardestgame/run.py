@@ -1,8 +1,11 @@
 import subprocess
 
 #Create class
-subprocess.check_call(['javac','src/net/thedanpage/worldshardestgame/Game.java'])
 
+subprocess.check_call(['javac','src/net/thedanpage/worldshardestgame/Player.java'])
+subprocess.check_call(['javac','src/net/thedanpage/worldshardestgame/Input.java'])
+subprocess.check_call(['javac','src/net/thedanpage/worldshardestgame/TextFileWriter.java'])
+subprocess.check_call(['javac','src/net/thedanpage/worldshardestgame/Game.java'])
 #Copy class to file net
 subprocess.call('mv src/net/thedanpage/worldshardestgame/*.class net/thedanpage/worldshardestgame',shell = True)
 
