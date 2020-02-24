@@ -1,6 +1,8 @@
 import subprocess
 
 #Create class
+
+subprocess.check_call(['javac','src/net/thedanpage/worldshardestgame/GameLevel.java'])
 subprocess.check_call(['javac','src/net/thedanpage/worldshardestgame/Game.java'])
 
 #Copy class to file net

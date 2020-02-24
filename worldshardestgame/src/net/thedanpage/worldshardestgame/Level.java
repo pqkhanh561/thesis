@@ -24,7 +24,7 @@ public class Level {
 	private String levelTitle;
 	
 	/** A list of all of the level's tiles. */
-	private ArrayList<Tile> tileMap;
+	public ArrayList<Tile> tileMap;
 	
 	/** A list of all of the level's dots. */
 	public ArrayList<Dot> dots;
