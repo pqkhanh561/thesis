@@ -53,7 +53,9 @@ public class Player {
 	
 	/** The opacity of the player. */
 	private double opacity;
-	
+    
+    public String key;
+
 	public Player() {
 		this.x = 400;
 		this.y = 300;
@@ -66,6 +68,7 @@ public class Player {
 		this.deaths = 0;
 		this.dead = false;
 		this.opacity = 255;
+        this.key = null;
 	}
 	
 	
@@ -84,6 +87,7 @@ public class Player {
 		this.deaths = 0;
 		this.dead = false;
 		this.opacity = 255;
+        this.key = null;
 	}
 	
 	
@@ -292,7 +296,15 @@ public class Player {
 			if (Input.down.isPressed && !this.collidingDown) this.y ++;
 			if (Input.left.isPressed && !this.collidingLeft) this.x --;
 			if (Input.right.isPressed && !this.collidingRight) this.x ++;
-		}
+            
+            //Input from file
+            System.out.println(key.trim().length());
+            if (key.trim().equalsIgnoreCase("up") && !this.collidingUp) this.y --;
+			if (key.trim().equalsIgnoreCase("down") && !this.collidingDown) this.y ++;
+            if (key.trim().equalsIgnoreCase("left") && !this.collidingLeft) this.x --;
+			if (key.trim().equalsIgnoreCase("right") && !this.collidingRight) this.x ++;
+
+	}
 		
 		if (this.x > 800) this.x = 0;
 		if (this.x < 0) this.x = 800;
