@@ -157,7 +157,7 @@ public class Game extends JPanel implements ActionListener {
 		update(g);
 		render(g);
         //printInfo(player, level);
-		System.out.println(level.tileMap);
+        System.out.println(Input.left.numTimesPressed);
 //       try
 //       {
 //           BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
