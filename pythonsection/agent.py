@@ -1,5 +1,3 @@
-
-
 import random
 import numpy as np
 from keras import Sequential
@@ -7,6 +5,8 @@ from collections import deque
 from keras.layers import Dense
 import matplotlib.pyplot as plt
 from keras.optimizers import adam
+import subprocess
+from env import env
 
 env = env()
 np.random.seed(0)
@@ -77,7 +77,7 @@ class DQN:
 def train_dqn(episode):
 
     loss = []
-    agent = DQN(3, 10)
+    agent = DQN(4, 10)
     for e in range(episode):
         state = env.reset()
         state = np.reshape(state, (1, 10))
@@ -86,7 +86,7 @@ def train_dqn(episode):
         for i in range(max_steps):
             action = agent.act(state)
             reward, next_state, done = env.step(action)
-            print(action)
+            #print(action)
             score += reward
             next_state = np.reshape(next_state, (1, 10))
             agent.remember(state, action, reward, next_state, done)
@@ -100,7 +100,7 @@ def train_dqn(episode):
 
 
 if __name__ == '__main__':
-    ep = 10
+    ep = 10000
     loss = train_dqn(ep)
     plt.plot([i for i in range(ep)], loss)
     plt.xlabel('episodes')

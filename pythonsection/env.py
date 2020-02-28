@@ -21,8 +21,6 @@ class env():
             subprocess.call('cp -r action/actionu.txt ../action.txt', shell=True)
         if action==4:
             subprocess.call('cp -r action/actions.txt ../action.txt', shell=True)
-
-
         #Change old state to new state
         while (True):
             try:
@@ -71,9 +69,9 @@ class env():
         return(state)
 
 
-if __name__=="__main__":
-    e= env()
-    e.reset()
-    while(True):
-        e.step(1);
-        time.sleep(0)
+#if __name__=="__main__":
+#    e= env()
+#    e.reset()
+#    while(True):
+#        e.step(1);
+#        time.sleep(0)
