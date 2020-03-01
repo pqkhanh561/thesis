@@ -85,7 +85,7 @@ def train_dqn(episode):
         max_steps = 1000
         for i in range(max_steps):
             action = agent.act(state)
-            #print(action)
+            print(i)
             for i in range(11):
             	reward, next_state, done = env.step(action)
             score += reward
