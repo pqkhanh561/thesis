@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from keras.optimizers import adam
 import subprocess
 from env import env
-
+from tqdm import tqdm
 env = env()
 np.random.seed(0)
 
@@ -83,9 +83,9 @@ def train_dqn(episode):
         state = np.reshape(state, (1, 10))
         score = 0
         max_steps = 1000
-        for i in range(max_steps):
+        print("Episode {}".format(e))
+        for i in tqdm(range(max_steps)):
             action = agent.act(state)
-            print(i)
             for i in range(11):
             	reward, next_state, done = env.step(action)
             score += reward
