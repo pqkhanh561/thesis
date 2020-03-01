@@ -69,9 +69,9 @@ class env():
         return(state)
 
 
-if __name__=="__main__":
-    e= env()
-    e.reset()
-    while(True):
-        e.step(1);
-        time.sleep(0)
+#if __name__=="__main__":
+#    e= env()
+#    e.reset()
+#    while(True):
+#        e.step(1);
+#        time.sleep(0)

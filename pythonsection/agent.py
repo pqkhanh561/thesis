@@ -8,6 +8,8 @@ from keras.optimizers import adam
 import subprocess
 from env import env
 from tqdm import tqdm
+import time
+
 env = env()
 np.random.seed(0)
 
@@ -95,6 +97,7 @@ def train_dqn(episode):
             agent.replay()
             if done:
                 print("episode: {}/{}, score: {}".format(e, episode, score))
+                time.sleep(2)
                 break
         loss.append(score)
     return loss
