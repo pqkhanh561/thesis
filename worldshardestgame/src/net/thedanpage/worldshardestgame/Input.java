@@ -10,7 +10,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 
-import kuusisto.tinysound.TinySound;
 
 public class Input {
 	
@@ -62,11 +61,11 @@ public class Input {
 				
 				if (e.getX() >= 752 && e.getY() <= 48) {
 					if (!Game.muted) {
-						TinySound.setGlobalVolume(0);
+						//TinySound.setGlobalVolume(0);
 						Game.muted = true;
 						Game.easyLog(Game.logger, Level.INFO, "Muted");
 					} else {
-						TinySound.setGlobalVolume(1);
+						//TinySound.setGlobalVolume(1);
 						Game.muted = false;
 						Game.easyLog(Game.logger, Level.INFO, "Unmuted");
 					}

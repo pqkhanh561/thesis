@@ -85,8 +85,9 @@ def train_dqn(episode):
         max_steps = 1000
         for i in range(max_steps):
             action = agent.act(state)
-            reward, next_state, done = env.step(action)
             #print(action)
+            for i in range(11):
+            	reward, next_state, done = env.step(action)
             score += reward
             next_state = np.reshape(next_state, (1, 10))
             agent.remember(state, action, reward, next_state, done)

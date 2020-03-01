@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+run_python(){
+	source ../env_thesis/bin/activate
+	cd pythonsection
+	python agent.py
+}
+
+run_java(){
+	cd worldshardestgame/
+	python run.py
+}
+
+rm state.txt
+touch state.txt
+run_java&run_python

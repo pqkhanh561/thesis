@@ -38,9 +38,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import kuusisto.tinysound.Music;
-import kuusisto.tinysound.Sound;
-import kuusisto.tinysound.TinySound;
 import java.nio.file.*;
 
 public class Game extends JPanel implements ActionListener {
@@ -133,11 +130,6 @@ public class Game extends JPanel implements ActionListener {
 	private int introTextOpacity = 0;
 
 	/** A whoosh sound. */
-	Sound drone = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/drone.ogg"));
-
-	/** A bell sound. */
-	Sound bell = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/bell.wav"));
-
 	private boolean checkIfEnemyInteger(GameLevel l){
 		for (Dot ob: l.dots){
 			if (ob.getX() != (int)ob.getX()) return false;
@@ -231,9 +223,9 @@ public class Game extends JPanel implements ActionListener {
 		//Transfer data to python 
 		if (gameState==LEVEL){
 			//if (checkIfEnemyInteger(level) == true && gameState==LEVEL){
-			String path = System.getProperty("user.home")+"/CodeFile/thesis/state.txt";
+			String path = System.getProperty("user.dir").replaceFirst("worldshardestgame","") + "state.txt";
 			printInfo(player, level, path);
-			String pathaction = System.getProperty("user.home")+"/CodeFile/thesis/action.txt";
+			String pathaction = System.getProperty("user.dir").replaceFirst("worldshardestgame","") + "action.txt";
 			while(!checkFileExist(pathaction) || readFromFile(pathaction)==null){
 				try {
 					Thread.sleep(5);
@@ -268,7 +260,7 @@ public class Game extends JPanel implements ActionListener {
 			if (gameState == INTRO) {
 
 				if (introTextOpacity == 0 && !fadeOutIntro) {
-					drone.play();
+					//drone.play();
 				}
 
 				if (introTextOpacity < 255 && !fadeOutIntro) {
@@ -285,7 +277,7 @@ public class Game extends JPanel implements ActionListener {
 								TextFileWriter.appendToFile(logFilePath, e.getMessage(),true);
 							}
 							fadeOutIntro = true;
-							bgMusic.start();
+							//bgMusic.start();
 						}
 					}.start();
 				}
@@ -336,7 +328,7 @@ public class Game extends JPanel implements ActionListener {
 					if (Input.mousePressed && Input.mouseCoords.x > 304 && Input.mouseCoords.y < 323
 							&& Input.mouseCoords.x < 515 && Input.mouseCoords.y > 192) {
 						showIntro = true;
-						bell.play();
+						//bell.play();
 					}	
 				}
 
@@ -717,10 +709,10 @@ public class Game extends JPanel implements ActionListener {
 
 				Game.easyLog(Game.logger, Level.INFO, "Starting The World's Hardest Game");
 
-				TinySound.init();
+				//TinySound.init();
 				Game.easyLog(Game.logger, Level.INFO, "TinySound initialized");
 
-				if (Game.muted) TinySound.setGlobalVolume(0);
+				//if (Game.muted) TinySound.setGlobalVolume(0);
 
 				Input.init();
 				Game.easyLog(Game.logger, Level.INFO, "Input initialized");

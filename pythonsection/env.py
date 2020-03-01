@@ -40,7 +40,7 @@ class env():
         if self.dead==1:
             self.reward-=3
         if self.win==1:
-            self.reward+=3
+            self.reward+=10
             self.dead=1
         self.reward-=0.1
 
@@ -69,9 +69,9 @@ class env():
         return(state)
 
 
-#if __name__=="__main__":
-#    e= env()
-#    e.reset()
-#    while(True):
-#        e.step(1);
-#        time.sleep(0)
+if __name__=="__main__":
+    e= env()
+    e.reset()
+    while(True):
+        e.step(1);
+        time.sleep(0)
