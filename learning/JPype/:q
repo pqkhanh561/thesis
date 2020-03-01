@@ -1,6 +1,0 @@
-from jpype import *
-startJVM(getDefaultJVMPath(), "-ea")
-java.lang.System.out.println("hello world")
-jpype.addClassPath('/home/khanhlinux/CodeFile/thesis/worldshardestgame/World\'s\ Hardest\ Game.jar')
-shutdownJVM()
-

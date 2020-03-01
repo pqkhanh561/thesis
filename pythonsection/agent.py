@@ -75,15 +75,14 @@ class DQN:
 
 
 def train_dqn(episode):
-
     loss = []
     agent = DQN(4, 10)
     for e in range(episode):
+        print("Episode {}".format(e))
         state = env.reset()
         state = np.reshape(state, (1, 10))
         score = 0
         max_steps = 1000
-        print("Episode {}".format(e))
         for i in tqdm(range(max_steps)):
             action = agent.act(state)
             for i in range(11):
@@ -94,6 +93,7 @@ def train_dqn(episode):
             state = next_state
             agent.replay()
             if done:
+		print("")
                 print("episode: {}/{}, score: {}".format(e, episode, score))
                 break
         loss.append(score)
