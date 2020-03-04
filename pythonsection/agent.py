@@ -88,14 +88,14 @@ def train_dqn(episode):
         for i in tqdm(range(max_steps)):
             action = agent.act(state)
             for i in range(11):
-            	reward, next_state, done = env.step(action)
+                reward, next_state, done = env.step(action)
             score += reward
             next_state = np.reshape(next_state, (1, 10))
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             agent.replay()
             if done:
-		print("")
+                print("")
                 print("episode: {}/{}, score: {}".format(e, episode, score))
                 time.sleep(2)
                 break
