@@ -95,7 +95,7 @@ def train_dqn(episode):
             state = next_state
             agent.replay()
             if done:
-		print("")
+                print("")
                 print("episode: {}/{}, score: {}".format(e, episode, score))
                 time.sleep(2)
                 break

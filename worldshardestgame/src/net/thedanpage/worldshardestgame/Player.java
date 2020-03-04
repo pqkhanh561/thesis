@@ -322,8 +322,6 @@ public class Player {
                 if (this.collidesWith(dot.getBounds())) {
                     this.deaths ++;
                     this.dead = true;
-
-
                 }
             }
         }
