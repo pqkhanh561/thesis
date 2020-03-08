@@ -32,7 +32,6 @@ class DQN:
         self.model = self.build_model()
 
     def build_model(self):
-
         model = Sequential()
         model.add(Dense(64, input_shape=(self.state_space,), activation='relu'))
         model.add(Dense(64, activation='relu'))
