@@ -1,14 +1,15 @@
 import random
 import numpy as np
-from keras import Sequential
+#from keras import Sequential
 from collections import deque
-from keras.layers import Dense
+#from tensorflow.keras.layers import Dense
 import matplotlib.pyplot as plt
-from keras.optimizers import adam
+#from keras.optimizers import adam
 import subprocess
 from env import env
 from tqdm import tqdm
 import time
+import tensorflow as tf
 
 env = env()
 np.random.seed(0)
@@ -32,11 +33,11 @@ class DQN:
         self.model = self.build_model()
 
     def build_model(self):
-        model = Sequential()
-        model.add(Dense(64, input_shape=(self.state_space,), activation='relu'))
-        model.add(Dense(64, activation='relu'))
-        model.add(Dense(self.action_space, activation='linear'))
-        model.compile(loss='mse', optimizer=adam(lr=self.learning_rate))
+        model = tf.keras.models.Sequential()
+        model.add(tf.keras.layers.Dense(64, input_shape=(self.state_space,), activation='relu'))
+        model.add(tf.keras.layers.Dense(64, activation='relu'))
+        model.add(tf.keras.layers.Dense(self.action_space, activation='linear'))
+        model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
         return model
 
     def remember(self, state, action, reward, next_state, done):
