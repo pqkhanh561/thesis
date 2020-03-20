@@ -2,7 +2,6 @@
 
 
 run_python(){
-	source ../env_thesis/bin/activate
 	cd pythonsection
 	python agent.py
 }
