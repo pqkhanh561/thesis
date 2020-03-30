@@ -3,14 +3,16 @@
 
 run_python(){
 	cd pythonsection
-	python agent.py
+	./agent.py
 }
 
 run_java(){
 	cd worldshardestgame/
-	python run.py
+	./run.py
 }
 
 rm state.txt
 touch state.txt
+killall java
+killall python3.7
 run_java&run_python

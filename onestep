@@ -1,0 +1,6 @@
+#!/bin/bash
+
+
+rm state.txt
+cp pythonsection/action/actionr.txt ./action.txt
+

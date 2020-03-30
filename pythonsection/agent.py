@@ -1,3 +1,4 @@
+#!/usr/bin/python3.7
 import random
 import numpy as np
 #from keras import Sequential
@@ -15,10 +16,8 @@ from model import model
 env = env()
 np.random.seed(0)
 
-
+""" Implementation of deep q learning algorithm """ 
 class DQN:
-
-	""" Implementation of deep q learning algorithm """
 
 	def __init__(self, action_space, state_space):
 
@@ -74,8 +73,8 @@ class DQN:
 		if self.epsilon > self.epsilon_min:
 			self.epsilon *= self.epsilon_decay
 
-
 def train_dqn(episode):
+	action_dict = {0:'left', 1:'down', 2:'right', 3:'up', 4:'stay'}
 	loss = []
 	agent = DQN(4, 10)
 	for e in range(episode):
@@ -84,11 +83,13 @@ def train_dqn(episode):
 		state = np.reshape(state, (1, 10))
 		score = 0
 		max_steps = 1000
-		for i in tqdm(range(max_steps)):
+		for i in range(max_steps):
 			action = agent.act(state)
 			for i in range(11):
 				reward, next_state, done = env.step(action)
 			score += reward
+
+			print([action_dict[action], done, reward])
 			next_state = np.reshape(next_state, (1, 10))
 			agent.remember(state, action, reward, next_state, done)
 			state = next_state

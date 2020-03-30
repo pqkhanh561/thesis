@@ -26,6 +26,7 @@ class env():
 		if action==4:
 			subprocess.call('cp -r action/actions.txt ../action.txt', shell=True)
 		#Change old state to new state
+		oldstate = self.state
 		while (True):
 			try:
 				self.reward = 0
@@ -44,10 +45,14 @@ class env():
 		if self.dead==1:
 			self.reward-=3
 		if self.win==1:
-			self.reward+=10
+			self.reward+=100
 			self.dead=1
 		self.reward-=0.1
-
+		#print(self.state[0][0:3])
+		#print(oldstate)
+		if oldstate != []:
+			if self.state[0][0:1] == oldstate[0][0:1] :
+				self.reward-=10
 		subprocess.call('rm ' + self.filestate,shell=True)
 		subprocess.call('touch ' + self.filestate, shell=True)
 		return self.reward, self.state, self.dead
