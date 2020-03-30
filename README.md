@@ -4,3 +4,7 @@
 
 TODO:	
 oldstate vs newstate 
+
+
+
+Integrate socket in java and python

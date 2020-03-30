@@ -9,7 +9,7 @@ def main():
 	# Create a TCP server socket.
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.bind((HOST, PORT))
-	s.listen(0)
+	s.listen(1)
  
 	while True:
 		# Wait for a connection from a client.
