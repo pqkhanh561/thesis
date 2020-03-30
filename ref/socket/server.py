@@ -28,6 +28,7 @@ class Session(threading.Thread):
 		while True:
 			# Read a string from the client.
 			line = self.conn.recv(256)
+			print(line)
 			if line == '':
 				# No more data from the client.  We're done.
 				break

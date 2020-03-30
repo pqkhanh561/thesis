@@ -158,17 +158,17 @@ public class Game extends JPanel implements ActionListener {
 
   //Function return state
 
-	private ArrayList<String> state_string(Player p, GameLevel l){
+	private ArrayList<String> state_string(){
 		ArrayList<String> arrS = new ArrayList<String>();	
 		String t  = Double.toString(player.getX()) + "," + Double.toString(player.getY()); 
 		arrS.add(t);
 		t = "";
-		for (Dot ob: l.dots){
+		for (Dot ob: level.dots){
       String tmp  = Double.toString(ob.getX()) + "," + Double.toString(ob.getY())+ ",";
-			t + tmp;
+			t = t + tmp;
     }
 		arrS.add(t);
-		if (p.dead){
+		if (player.dead){
 			arrS.add("1");
     }
     else arrS.add("0"); 
@@ -185,11 +185,13 @@ public class Game extends JPanel implements ActionListener {
       String tmp  = Double.toString(ob.getX()) + "," + Double.toString(ob.getY())+ ",";
       TextFileWriter.appendToFile(path, tmp, false);
     }
+    
     TextFileWriter.appendToFile(path,"", true);
     if (p.dead){
       TextFileWriter.appendToFile(path, "1", true); //DEAD
     }
     else TextFileWriter.appendToFile(path, "0", true); 
+
     if (game.levelNum > game.currentlevel){
       TextFileWriter.appendToFile(path, "1"); //WIN
     }
@@ -269,13 +271,15 @@ public class Game extends JPanel implements ActionListener {
 			}
 			}
 
-		private static void give_socket() throws IOException{
+		private void give_socket() throws IOException{
 
 			// Build BufferedWriter and BufferedReader from the socket so we
 			// can do two-way text-based I/O.
-			state_string(player, level);
-			game.sockOut.write(line, 0, line.length());
-			game.sockOut.newLine();
+			ArrayList<String> output = state_string();
+      for (String t : output){
+			  game.sockOut.write(t, 0, t.length());
+			  game.sockOut.newLine();
+      }
 			game.sockOut.flush();
 
 			// Read the response from the remote process.
