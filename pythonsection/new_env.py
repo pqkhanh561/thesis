@@ -1,4 +1,4 @@
-
+#!/usr/bin/python3.7
 import subprocess
 import time
 import numpy as np
@@ -10,7 +10,8 @@ HOST = ''
 PORT = 65432
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
-s.listen(0)
+s.listen(1)
+action_dict = {0:'left', 1:'down', 2:'right', 3:'up', 4:'stay'}
 
 
 class env():
@@ -47,26 +48,28 @@ class Session(threading.Thread):
 
         # self.conn.sendall(str(self.action).encode())
         # agent = self.conn.recv(256)
+        # print(agent)
         # enemy = self.conn.recv(256)
+        # print(enemy)
         # done = self.conn.recv(256)
+        # print(done)
         # win = self.conn.recv(256)
         # self.state = [agent, enemy, done, win]
         # print(agent)
         # We're done with this connection, so close it.
         # self.conn.sendall(agent)
-        # self.conn.close()
         while True:
-            # Read a string from the client.
-            line = self.conn.recv(256)
-            print(line)
-            if line == '':
-                # No more data from the client.  We're done.
-                break
+           line = self.conn.recv(256)
+           #print(line.decode("utf-8"))
+           #line = line.decode("utf-8")
+           if line == '':
+               break
 
-            # Convert the line to all caps and send it back to the client.
-            self.conn.sendall(line.upper())
-
-            # We're done with this connection, so close it.
+           #self.action = str.encode(action_dict[self.action])
+           #line = str.encode(action_dict[self.action])
+           print(type(line))
+           print(dir(line))
+           self.conn.send(line)
         self.conn.close()
 
     def get_state(self):
@@ -74,7 +77,7 @@ class Session(threading.Thread):
 
 
 if __name__ == "__main__":
-    e = env()
+    e=env()
     e.reset()
     while(True):
         e.step(1)

@@ -157,27 +157,32 @@ public class Game extends JPanel implements ActionListener {
 
 
   //Function return state
-
-	private ArrayList<String> state_string(){
-		ArrayList<String> arrS = new ArrayList<String>();	
-		String t  = Double.toString(player.getX()) + "," + Double.toString(player.getY()); 
-		arrS.add(t);
-		t = "";
+	private String state_string(){
+		//ArrayList<String> arrS = new ArrayList<String>();	
+		String t  = Double.toString(player.getX()) + "," + Double.toString(player.getY()) + ","; 
+		//arrS.add(t);
+		//t = "";
 		for (Dot ob: level.dots){
       String tmp  = Double.toString(ob.getX()) + "," + Double.toString(ob.getY())+ ",";
 			t = t + tmp;
     }
-		arrS.add(t);
+		//arrS.add(t);
 		if (player.dead){
-			arrS.add("1");
+			//arrS.add("1");
+			t = t + "1,";
     }
-    else arrS.add("0"); 
+    else t = t + "0,"; //arrS.add("0"); 
     if (game.levelNum > game.currentlevel){
-			arrS.add("1");
+			//arrS.add("1");
+			t = t + "1";
     }
-    else arrS.add("0"); 
-		return arrS;
+    else t = t+ "0"; //arrS.add("0"); 
+		//System.out.println(t);
+		return t;
 	}
+
+
+
   private void printInfo(Player p, GameLevel l, String path){
     String t  = Double.toString(player.getX()) + "," + Double.toString(player.getY()); 
     TextFileWriter.appendToFile(path, t, true);
@@ -275,11 +280,14 @@ public class Game extends JPanel implements ActionListener {
 
 			// Build BufferedWriter and BufferedReader from the socket so we
 			// can do two-way text-based I/O.
-			ArrayList<String> output = state_string();
-      for (String t : output){
-			  game.sockOut.write(t, 0, t.length());
-			  game.sockOut.newLine();
-      }
+			//ArrayList<String> output = state_string();
+      //for (String t : output){
+			//  game.sockOut.write(t, 0, t.length());
+			//  game.sockOut.newLine();
+      //}
+			String output = state_string();
+			game.sockOut.write(output, 0, output.length());
+			game.sockOut.newLine();	
 			game.sockOut.flush();
 
 			// Read the response from the remote process.
@@ -302,7 +310,6 @@ public class Game extends JPanel implements ActionListener {
 			try{
 				give_socket();
 			}catch (IOException e) {
-				System.out.println("give socket");
 			}
       //give_state();
       //Start the timer
