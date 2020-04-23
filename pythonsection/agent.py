@@ -1,11 +1,8 @@
 #!/usr/bin/python3.7
 import random
 import numpy as np
-#from keras import Sequential
 from collections import deque
-#from tensorflow.keras.layers import Dense
 import matplotlib.pyplot as plt
-#from keras.optimizers import adam
 import subprocess
 from env import env
 from tqdm import tqdm
@@ -13,7 +10,20 @@ import time
 import tensorflow as tf
 from model import model
 
-env = env()
+import socket	
+import time	
+						# Import socket module
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)					# Create a socket object
+host = socket.gethostname() # Get local machine name
+port = 12345								# Reserve a port for your service.
+s.bind((host, port))				# Bind to the port
+
+s.listen(5)									# Now wait for client connection.
+c, addr = s.accept()			# Establish connection with client.
+print ('Got connection from', addr)
+
+env = env(c)
 np.random.seed(0)
 
 """ Implementation of deep q learning algorithm """ 
@@ -79,17 +89,20 @@ def train_dqn(episode):
 	agent = DQN(4, 10)
 	for e in range(episode):
 		print("Episode {}".format(e))
-		state = env.reset()
+		#state = env.reset() #################
+		state = np.random.rand(1,10)
 		state = np.reshape(state, (1, 10))
 		score = 0
 		max_steps = 1000
+		full_msg=''
 		for i in range(max_steps):
 			action = agent.act(state)
 			for i in range(11):
-				reward, next_state, done = env.step(action)
+				reward, next_state, done, full_msg = env.step(action,full_msg)
+				time.sleep(2)
 			score += reward
 
-			print([action_dict[action], done, reward])
+			#print([action_dict[action], done, reward])
 			next_state = np.reshape(next_state, (1, 10))
 			agent.remember(state, action, reward, next_state, done)
 			state = next_state

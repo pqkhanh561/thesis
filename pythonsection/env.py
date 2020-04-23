@@ -2,29 +2,50 @@ import subprocess
 import time
 import numpy as np
 
+HEADERSIZE = 70
+
 class env():
 	filestate = "../state.txt"
 
-	def __init__(self):
+	def __init__(self, socket):
 		self.state = [] #Include position of agen and position of enemy
 		self.reward = 0
 		self.dead = 0	#1: is dead
 		self.win = 0
+		self.socket = socket
+		for i in range(50):
+			self.socket.send(bytes('right',encoding='utf8'))
+			tmp =''
+			while True:
+				t = self.socket.recv(16)
+				tmp = tmp + t.decode("utf-8")
+				if tmp.count(',')>=3 and tmp[-1]!=',':
+					break
+		try:
+			while self.sock.recv(1024): 
+				pass
+		except:
+			print("empty")
+			pass
+			
 
 
-	def step(self, action):
-		#self.state = np.random.rand(1,10)
-		#return self.reward, self.state, self.dead
-		if action == 0:
-			subprocess.call('cp -r action/actionl.txt ../action.txt', shell=True)
-		if action==1:
-			subprocess.call('cp -r action/actiond.txt ../action.txt', shell=True)
-		if action==2:
-			subprocess.call('cp -r action/actionr.txt ../action.txt', shell=True)
-		if action==3:
-			subprocess.call('cp -r action/actionu.txt ../action.txt', shell=True)
-		if action==4:
-			subprocess.call('cp -r action/actions.txt ../action.txt', shell=True)
+	def step(self, action, full_msg):
+		self.socket.send(bytes('right',encoding='utf8'))
+		while True:
+			t = self.socket.recv(70)
+			full_msg =full_msg + t.decode("utf-8")
+			if len(full_msg) > HEADERSIZE:
+				break
+		msg = full_msg[:HEADERSIZE]
+		full_msg = full_msg[HEADERSIZE:]
+		print(full_msg)
+		print(msg)
+		print(len(msg))
+		self.state = np.random.rand(1,10)
+		return self.reward, self.state, self.dead, full_msg
+		'''
+		
 		#Change old state to new state
 		oldstate = self.state
 		while (True):
@@ -55,6 +76,7 @@ class env():
 				self.reward-=10
 		subprocess.call('rm ' + self.filestate,shell=True)
 		subprocess.call('touch ' + self.filestate, shell=True)
+		'''
 		return self.reward, self.state, self.dead
 
 

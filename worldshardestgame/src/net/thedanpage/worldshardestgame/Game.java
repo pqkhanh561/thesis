@@ -41,23 +41,31 @@ import javax.swing.Timer;
 import java.nio.file.*;
 
 /** lib socker */
+import java.io.DataInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.io.OutputStream;
 
 
 public class Game extends JPanel implements ActionListener {
   // The remote process will run on localhost and listen on
   // port 65432.
-  public static final String REMOTE_HOST = "";
-  public static final int REMOTE_PORT = 65432;
+  /*public static final String REMOTE_HOST = "";
+  public static final int REMOTE_PORT = 7;
 
 	public Socket socket = null;
 	public BufferedWriter sockOut = null;
-	public BufferedReader sockIn = null; 
+	public BufferedReader sockIn = null; */
+  static String hostName = "HP-ENVY-Laptop-13-aq0xxx";
+  static int portNumber = 12345;
+  Socket socket = null;
+  BufferedReader sockIn = null;
+  OutputStream sockOut=null;
+  static int HEADERSIZE=70;
 
   /** An instance of the game. */
   private static Game game;
@@ -157,6 +165,7 @@ public class Game extends JPanel implements ActionListener {
 
 
   //Function return state
+  //Fix: The length constant by 70
 	private String state_string(){
 		//ArrayList<String> arrS = new ArrayList<String>();	
 		String t  = Double.toString(player.getX()) + "," + Double.toString(player.getY()) + ","; 
@@ -178,6 +187,12 @@ public class Game extends JPanel implements ActionListener {
     }
     else t = t+ "0"; //arrS.add("0"); 
 		//System.out.println(t);
+
+    while (t.length()<HEADERSIZE){
+      t = t + ' ';
+    }
+    System.out.println(t);
+    System.out.println(t.length());
 		return t;
 	}
 
@@ -277,29 +292,25 @@ public class Game extends JPanel implements ActionListener {
 			}
 
 		private void give_socket() throws IOException{
+      try{
+        //Read move from socket
+        String userInput= "";
+        for (int i =0; i <5; i++){
+            int ch;
+            ch = game.sockIn.read();
+            userInput = userInput + (char)ch; 
+        }
+        System.out.println("echo: " + userInput);
 
-			// Build BufferedWriter and BufferedReader from the socket so we
-			// can do two-way text-based I/O.
-			//ArrayList<String> output = state_string();
-      //for (String t : output){
-			//  game.sockOut.write(t, 0, t.length());
-			//  game.sockOut.newLine();
-      //}
-			String output = state_string();
-			game.sockOut.write(output, 0, output.length());
-			game.sockOut.newLine();	
-			game.sockOut.flush();
 
-			// Read the response from the remote process.
-			String response = game.sockIn.readLine();
-			if (response == null) {
-				System.out.println("Remote process closed the connection.");
-			}
-
-			// Print the response to the console.
-			System.out.println("Got back this response:");
-			System.out.println(response);
-			System.out.println();
+        //Write data to socket
+        char[] output = state_string().toCharArray();
+        for (char x :output){
+                  game.sockOut.write((int) x);
+        }
+      } catch (IOException ie){
+            System.out.println("Can't connect to server");
+      }
 		}
     
 
@@ -310,6 +321,7 @@ public class Game extends JPanel implements ActionListener {
 			try{
 				give_socket();
 			}catch (IOException e) {
+				System.exit(0);
 			}
       //give_state();
       //Start the timer
@@ -792,15 +804,20 @@ public class Game extends JPanel implements ActionListener {
         frame.setLocationRelativeTo(null);
 
         game = new Game();
-				game.socket = new Socket(REMOTE_HOST, REMOTE_PORT);
+				/*game.socket = new Socket(REMOTE_HOST, REMOTE_PORT);
 
 				// Build BufferedWriter and BufferedReader from the socket so we
 				// can do two-way text-based I/O.
 				game.sockOut = new BufferedWriter(
 						new OutputStreamWriter(game.socket.getOutputStream()));
 				game.sockIn = new BufferedReader(
-						new InputStreamReader(game.socket.getInputStream()));
+						new InputStreamReader(game.socket.getInputStream()));*/
 
+        game.socket = new Socket(game.hostName, game.portNumber);
+        game.sockOut = game.socket.getOutputStream();
+        game.sockIn =
+                new BufferedReader(
+                    new InputStreamReader(game.socket.getInputStream()));
 
         frame.add(game);
 

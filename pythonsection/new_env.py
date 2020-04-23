@@ -28,7 +28,7 @@ class env():
         conn, addr = s.accept()
         sess = Session(conn, action)
         # Handle the session in a separate thread.
-        sess.start()
+        sess.run()
         # print(sess.get_state())
         return self.reward, self.state, self.dead
 
@@ -58,19 +58,19 @@ class Session(threading.Thread):
         # print(agent)
         # We're done with this connection, so close it.
         # self.conn.sendall(agent)
-        while True:
-           line = self.conn.recv(256)
-           #print(line.decode("utf-8"))
-           #line = line.decode("utf-8")
-           if line == '':
-               break
+        line = self.conn.recv(10)
+        #print(line.decode("utf-8"))
+        line = line.decode("utf-8")
+        #if line == '':
+        #    break
 
            #self.action = str.encode(action_dict[self.action])
            #line = str.encode(action_dict[self.action])
-           print(type(line))
-           print(dir(line))
-           self.conn.send(line)
-        self.conn.close()
+        print(line)
+        line = 'left'
+        self.conn.send(line.encode())
+        #self.conn.close()
+        print("close")
 
     def get_state(self):
         return self.state
@@ -81,4 +81,4 @@ if __name__ == "__main__":
     e.reset()
     while(True):
         e.step(1)
-        time.sleep(0)
+        print("on")
