@@ -11,8 +11,8 @@ run_java(){
 	./run.py
 }
 
-rm state.txt
-touch state.txt
-killall java
-killall python3.7
-run_java&run_python
+#rm state.txt
+#touch state.txt
+#killall java
+#killall python3.7
+#run_java&run_python
