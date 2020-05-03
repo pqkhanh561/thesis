@@ -196,105 +196,10 @@ public class Game extends JPanel implements ActionListener {
 		while (t.length()<HEADERSIZE){
 			t = t + ' ';
 		}
-		System.out.println(t);
-		System.out.println(t.length());
+		//System.out.println(t);
+		//System.out.println(t.length());
 		return t;
 	}
-
-
-
-	private void printInfo(Player p, GameLevel l, String path){
-		String t  = Double.toString(player.getX()) + "," + Double.toString(player.getY()); 
-		TextFileWriter.appendToFile(path, t, true);
-		for (Dot ob: l.dots){
-			String tmp  = Double.toString(ob.getX()) + "," + Double.toString(ob.getY())+ ",";
-			TextFileWriter.appendToFile(path, tmp, false);
-		}
-
-		TextFileWriter.appendToFile(path,"", true);
-		if (p.dead){
-			TextFileWriter.appendToFile(path, "1", true); //DEAD
-		}
-		else TextFileWriter.appendToFile(path, "0", true); 
-
-		if (game.levelNum > game.currentlevel){
-			TextFileWriter.appendToFile(path, "1"); //WIN
-		}
-		else TextFileWriter.appendToFile(path, "0"); 
-
-	}
-
-	private boolean checkFileExist(String path){
-		File f = new File(path);
-		if(f.exists() && !f.isDirectory()){
-			return true;
-		}
-		return false;
-	}
-
-	public void deleteFile(String path){
-		try
-		{ 
-			Files.deleteIfExists(Paths.get(path)); 
-
-		} 
-		catch(NoSuchFileException e) 
-		{ 
-			System.out.println("No such file/directory exists"); 
-
-		} 
-		catch(DirectoryNotEmptyException e) 
-		{ 
-			System.out.println("Directory is not empty."); 
-
-		} 
-		catch(IOException e) 
-		{ 
-			System.out.println("Invalid permissions."); 
-
-		} 
-
-	}
-
-	private String readFromFile(String file)
-	{
-		StringBuilder sb = new StringBuilder();
-
-		try (BufferedReader br = Files.newBufferedReader(Paths.get(file))) {
-			String line;
-			while ((line = br.readLine()) != null) {
-				sb.append(line).append("\n");
-			}
-
-		} catch (IOException e) {
-		}
-		if (sb.toString().length()<3){
-			return null;
-		} 
-		return(sb.toString());
-	}
-	private void give_state(){
-		if (player.key != null) player.key = null;
-		//Transfer data to python 
-		if (gameState==LEVEL){
-			//if (checkIfEnemyInteger(level) == true && gameState==LEVEL){
-			String path = System.getProperty("user.dir").replaceFirst("worldshardestgame","") + "state.txt";
-			printInfo(player, level, path);
-			String pathaction = System.getProperty("user.dir").replaceFirst("worldshardestgame","") + "action.txt";
-			while(!checkFileExist(pathaction) || readFromFile(pathaction)==null){
-				try {
-					Thread.sleep(5);
-				} catch (InterruptedException e) {
-					System.out.println("Shit here");
-					TextFileWriter.appendToFile(logFilePath, e.getMessage(),true);
-				}
-
-			}
-			player.key = readFromFile(pathaction);
-			deleteFile(pathaction);
-
-			}
-		}
 
 		private void give_socket() throws IOException{
 			try{
@@ -305,7 +210,8 @@ public class Game extends JPanel implements ActionListener {
 					ch = game.sockIn.read();
 					userInput = userInput + (char)ch; 
 				}
-				System.out.println("echo: " + userInput);
+				player.key = userInput;
+				//System.out.println("echo: " + userInput);
 
 
 				//Write data to socket
@@ -326,7 +232,7 @@ public class Game extends JPanel implements ActionListener {
 			try{
 				if (is_begin==true){
 					state_string();
-					System.out.println("pass");
+					//System.out.println("pass");
 				}
 				else{
 					give_socket();
@@ -334,10 +240,6 @@ public class Game extends JPanel implements ActionListener {
 			}catch (IOException e) {
 				System.exit(0);
 			}
-			//give_state();
-			//Start the timer
-			//System.out.println(Integer.toString(player.getX())+","+Integer.toString(player.getY()));
-
 			t.start();
 			Toolkit.getDefaultToolkit().sync();
 		}

@@ -90,21 +90,18 @@ def train_dqn(episode):
         agent = DQN(4, 10)
         for e in range(episode):
                 print("Episode {}".format(e))
-                #state = env.reset() #################
-                state = np.random.rand(1,10)
+                state = env.reset() 
                 state = np.reshape(state, (1, 10))
                 score = 0
                 max_steps = 1000
                 full_msg=''
-                for i in range(max_steps):
+                for i in tqdm(range(max_steps)):
                         action = agent.act(state)
                         for i in range(11):
                                 reward, next_state, done, full_msg = env.step(action,full_msg)
                                 #time.sleep(2)
-                       #print(next_state)
                         score += reward
 
-                        #print([action_dict[action], done, reward])
                         next_state = np.reshape(next_state, (1, 10))
                         agent.remember(state, action, reward, next_state, done)
                         state = next_state
