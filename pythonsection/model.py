@@ -15,8 +15,8 @@ class model():
 			self.sess.run(init)
 
 		def build_model(self, n_output):
-			fc1 = tf.contrib.layers.fully_connected(self.X, 64, activation_fn=tf.nn.relu, scope='fc1')
-			fc2 = tf.contrib.layers.fully_connected(fc1, 64, activation_fn=tf.nn.relu, scope='fc2')
+			fc1 = tf.contrib.layers.fully_connected(self.X, 1024, activation_fn=tf.nn.relu, scope='fc1')
+			fc2 = tf.contrib.layers.fully_connected(fc1, 1024, activation_fn=tf.nn.relu, scope='fc2')
 			out = tf.contrib.layers.fully_connected(fc2, n_output, activation_fn=None, scope='out')
 			return out
 				

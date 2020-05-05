@@ -60,7 +60,7 @@ public class Game extends JPanel implements ActionListener {
 	  public Socket socket = null;
 	  public BufferedWriter sockOut = null;
 	  public BufferedReader sockIn = null; */
-	static String hostName = "khanhubuntu-HP-ENVY";
+	static String hostName = "khanh-H81M-DS2";
 	static int portNumber = 12345;
 	Socket socket = null;
 	BufferedReader sockIn = null;

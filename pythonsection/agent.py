@@ -12,7 +12,6 @@ from model import model
 
 import socket   
 import time     
-
 # Import socket module
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   # Create a socket object
 host = socket.gethostname() # Get local machine name
@@ -36,7 +35,7 @@ class DQN:
                 self.state_space = state_space
                 self.epsilon = 1
                 self.gamma = .95
-                self.batch_size = 64
+                self.batch_size = 1024 
                 self.epsilon_min = .01
                 self.epsilon_decay = .995
                 self.learning_rate = 0.001
@@ -87,7 +86,7 @@ class DQN:
 def train_dqn(episode):
         action_dict = {0:'left', 1:'down', 2:'right', 3:'up', 4:'stay'}
         loss = []
-        agent = DQN(4, 10)
+        agent = DQN(5, 10)
         for e in range(episode):
                 print("Episode {}".format(e))
                 state = env.reset() 
