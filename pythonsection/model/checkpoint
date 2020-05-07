@@ -1,6 +1,2 @@
-model_checkpoint_path: "env.ckpt-450"
-all_model_checkpoint_paths: "env.ckpt-250"
-all_model_checkpoint_paths: "env.ckpt-300"
-all_model_checkpoint_paths: "env.ckpt-350"
-all_model_checkpoint_paths: "env.ckpt-400"
-all_model_checkpoint_paths: "env.ckpt-450"
+model_checkpoint_path: "env.ckpt-0"
+all_model_checkpoint_paths: "env.ckpt-0"

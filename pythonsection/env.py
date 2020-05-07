@@ -3,7 +3,7 @@ import time
 import numpy as np
 
 HEADERSIZE = 70
-ACTION_DICT = ['up   ','down ','right','left ','stay ']
+ACTION_DICT = ['up   ','down ','right','left ','stay ','reset']
 
 class env():
         def __init__(self, socket):
@@ -70,7 +70,7 @@ class env():
                 self.win = float(is_win)
 
         def reset(self):
-                state,_,_,_,_ = self.step(4,'') #stay
+                state,_,_,_,_ = self.step(5,'') #stay
                 return(state)
 
 

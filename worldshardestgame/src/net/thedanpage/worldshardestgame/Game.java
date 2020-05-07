@@ -71,7 +71,7 @@ public class Game extends JPanel implements ActionListener {
 	private static Game game;
 
 	/** The timer used for the game's clock. */
-	private Timer t = new Timer(1, this);
+	private Timer t = new Timer(0, this);
 
 	/** Used for logging information during the game. */
 	public final static Logger logger = Logger.getLogger(Game.class.getName());
@@ -107,30 +107,6 @@ public class Game extends JPanel implements ActionListener {
 
 	/** Controls whether the game has sound or not. */
 	static boolean muted = true;
-
-
-	/** Images for indicating volume. */
-	/** Background music. */
-	//static Thread bgMusic = new Thread() {
-	//	public void run() {
-	//		//TinySound.init();
-	//		//Music bgmusic = TinySound.loadMusic(ClassLoader.getSystemResource(
-	//		//            "net/thedanpage/worldshardestgame/resources/music.ogg"));
-	//		//bgmusic.play(true);
-	//	}
-	//};
-
-	//Thread endIntro = new Thread() {
-	//	public void run() {
-	//		try {
-	//			Thread.sleep(0);
-	//		} catch (InterruptedException e) {
-	//			TextFileWriter.appendToFile(logFilePath, e.getMessage(), true);
-	//		}
-	//		gameState = MAIN_MENU;
-	//		easyLog(logger, Level.INFO, "Game state set to MAIN_MENU");
-	//	}
-	//};
 
 	static boolean doLogging = true;
 
@@ -192,6 +168,9 @@ public class Game extends JPanel implements ActionListener {
 					userInput = userInput + (char)ch; 
 				}
 				player.key = userInput;
+				if (userInput == "reset"){
+					level.init(player, 1);
+				}
 				//System.out.println("echo: " + userInput);
 
 

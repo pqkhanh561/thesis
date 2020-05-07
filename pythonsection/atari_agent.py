@@ -9,10 +9,11 @@ from scipy.misc import imresize
 from tqdm import tqdm
 from env import env
 
-MAX_EXPERIENCES = 500000 
-MIN_EXPERIENCES = 50000 
+MAX_EXPERIENCES = 500000
+MIN_EXPERIENCES = 50000
 TARGET_UPDATE_PERIOD = 10000
 K = 5
+MAX_STEP=10000
 
 #Sever setup
 import socket   
@@ -188,14 +189,18 @@ if __name__ == '__main__':
             episode_reward = 0
 
             done = False
-            while not done:
+            #while not done:
+            for _ in range(MAX_STEP):
 
                 if total_t % TARGET_UPDATE_PERIOD == 0:
                     target_model.copy_from(model)
                     print("Copied model parameters to target network, total_t = %s, period = %s" % (total_t, TARGET_UPDATE_PERIOD))
                 
                 action = model.sample_action(state, epsilon)
+                time_act = datetime.now()
                 obs, reward, done, _ , full_msg= env.step(action, full_msg)
+                #print("Render time: ",datetime.now() - time_act)
+                time_act = datetime.now() - time_act
                 if done == 1:
                     done = True
                 else: 
@@ -212,7 +217,15 @@ if __name__ == '__main__':
                 t0_2 = datetime.now()
                 loss = learn(model, target_model, experience_replay_buffer, gamma, batch_sz)
                 dt = datetime.now() - t0_2
+                #print("Learn time : ", dt)
 
+                #Confirm 
+                '''
+                if time_act > dt:
+                    print("Java timeout")
+                else:
+                    print("Python timeout")
+                '''
                 total_time_training += dt.total_seconds()
                 num_steps_in_episode +=1
                 
