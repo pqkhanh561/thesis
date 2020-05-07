@@ -60,7 +60,7 @@ public class Game extends JPanel implements ActionListener {
 	  public Socket socket = null;
 	  public BufferedWriter sockOut = null;
 	  public BufferedReader sockIn = null; */
-	static String hostName = "khanh-H81M-DS2";
+	static String hostName = "localhost";
 	static int portNumber = 12345;
 	Socket socket = null;
 	BufferedReader sockIn = null;
@@ -71,7 +71,7 @@ public class Game extends JPanel implements ActionListener {
 	private static Game game;
 
 	/** The timer used for the game's clock. */
-	private Timer t = new Timer(5, this);
+	private Timer t = new Timer(1, this);
 
 	/** Used for logging information during the game. */
 	public final static Logger logger = Logger.getLogger(Game.class.getName());
@@ -110,36 +110,27 @@ public class Game extends JPanel implements ActionListener {
 
 
 	/** Images for indicating volume. */
-	private final Image VOLUME_BLACK = new ImageIcon(ClassLoader.getSystemResource(
-				"net/thedanpage/worldshardestgame/resources/volume_black.png")).getImage();
-	private final Image VOLUME_BLACK_MUTE = new ImageIcon(ClassLoader.getSystemResource(
-				"net/thedanpage/worldshardestgame/resources/volume_black_mute.png")).getImage();
-	private final Image VOLUME_WHITE = new ImageIcon(ClassLoader.getSystemResource(
-				"net/thedanpage/worldshardestgame/resources/volume_white.png")).getImage();
-	private final Image VOLUME_WHITE_MUTE = new ImageIcon(ClassLoader.getSystemResource(
-				"net/thedanpage/worldshardestgame/resources/volume_white_mute.png")).getImage();
-
 	/** Background music. */
-	static Thread bgMusic = new Thread() {
-		public void run() {
-			//TinySound.init();
-			//Music bgmusic = TinySound.loadMusic(ClassLoader.getSystemResource(
-			//            "net/thedanpage/worldshardestgame/resources/music.ogg"));
-			//bgmusic.play(true);
-		}
-	};
+	//static Thread bgMusic = new Thread() {
+	//	public void run() {
+	//		//TinySound.init();
+	//		//Music bgmusic = TinySound.loadMusic(ClassLoader.getSystemResource(
+	//		//            "net/thedanpage/worldshardestgame/resources/music.ogg"));
+	//		//bgmusic.play(true);
+	//	}
+	//};
 
-	Thread endIntro = new Thread() {
-		public void run() {
-			try {
-				Thread.sleep(0);
-			} catch (InterruptedException e) {
-				TextFileWriter.appendToFile(logFilePath, e.getMessage(), true);
-			}
-			gameState = MAIN_MENU;
-			easyLog(logger, Level.INFO, "Game state set to MAIN_MENU");
-		}
-	};
+	//Thread endIntro = new Thread() {
+	//	public void run() {
+	//		try {
+	//			Thread.sleep(0);
+	//		} catch (InterruptedException e) {
+	//			TextFileWriter.appendToFile(logFilePath, e.getMessage(), true);
+	//		}
+	//		gameState = MAIN_MENU;
+	//		easyLog(logger, Level.INFO, "Game state set to MAIN_MENU");
+	//	}
+	//};
 
 	static boolean doLogging = true;
 
@@ -156,7 +147,6 @@ public class Game extends JPanel implements ActionListener {
 	/** The opacity of the intro text. */
 	private int introTextOpacity = 0;
 
-	/** A whoosh sound. */
 	private boolean checkIfEnemyInteger(GameLevel l){
 		for (Dot ob: l.dots){
 			if (ob.getX() != (int)ob.getX()) return false;
@@ -169,26 +159,19 @@ public class Game extends JPanel implements ActionListener {
 	//Function return state
 	//Fix: The length constant by 70
 	private String state_string(){
-		//ArrayList<String> arrS = new ArrayList<String>();	
 		String t  = Double.toString(player.getX()) + "," + Double.toString(player.getY()) + ","; 
-		//arrS.add(t);
-		//t = "";
 		for (Dot ob: level.dots){
 			String tmp  = Double.toString(ob.getX()) + "," + Double.toString(ob.getY())+ ",";
 			t = t + tmp;
 		}
-		//arrS.add(t);
 		if (player.dead){
-			//arrS.add("1");
 			t = t + "1,";
 		}
-		else t = t + "0,"; //arrS.add("0"); 
+		else t = t + "0,";
 		if (game.levelNum > game.currentlevel){
-			//arrS.add("1");
 			t = t + "1";
 		}
-		else t = t+ "0"; //arrS.add("0"); 
-		//System.out.println(t);
+		else t = t+ "0"; 
 		
 		if (t.length() > 50){
 			is_begin=false;
@@ -196,8 +179,6 @@ public class Game extends JPanel implements ActionListener {
 		while (t.length()<HEADERSIZE){
 			t = t + ' ';
 		}
-		//System.out.println(t);
-		//System.out.println(t.length());
 		return t;
 	}
 
@@ -232,7 +213,6 @@ public class Game extends JPanel implements ActionListener {
 			try{
 				if (is_begin==true){
 					state_string();
-					//System.out.println("pass");
 				}
 				else{
 					give_socket();
@@ -434,12 +414,6 @@ public class Game extends JPanel implements ActionListener {
 							g.setColor(Color.LIGHT_GRAY);
 						}
 						g.drawString("MENU", 0, 17);
-
-						if (muted) {
-							g.drawImage(VOLUME_WHITE_MUTE, 760, -12, null);
-						} else {
-							g.drawImage(VOLUME_WHITE, 760, -12, null);
-						}
 					}
 
 				} else if (gameState == LEVEL_TITLE) {
@@ -457,11 +431,6 @@ public class Game extends JPanel implements ActionListener {
 				}
 
 				if (gameState != LEVEL) {
-					if (muted) {
-						g.drawImage(VOLUME_BLACK_MUTE, 760, -12, null);
-					} else {
-						g.drawImage(VOLUME_BLACK, 760, -12, null);
-					}
 				}
 
 				g.dispose();
@@ -476,7 +445,6 @@ public class Game extends JPanel implements ActionListener {
 					repaint();
 				}catch(Exception e){
 					System.out.println("Shit repaint");
-					t.stop();
 				}
 			}
 
@@ -657,13 +625,6 @@ public class Game extends JPanel implements ActionListener {
 
 
 			public static void main(String[] args)  throws IOException {
-
-				//		int option = JOptionPane.showConfirmDialog(
-				//				new Dialog(frame, true),
-				//				"Would you like to enable logging to " + System.getProperty("user.home") + "/worldshardestgame/logs?",
-				//				"Setup",
-				//				JOptionPane.YES_NO_OPTION);
-				//		
 				int option = JOptionPane.NO_OPTION;
 				if (option == JOptionPane.YES_OPTION) Game.doLogging = true;
 				else Game.doLogging = false;
@@ -717,15 +678,6 @@ public class Game extends JPanel implements ActionListener {
 				frame.setLocationRelativeTo(null);
 
 				game = new Game();
-				/*game.socket = new Socket(REMOTE_HOST, REMOTE_PORT);
-
-				// Build BufferedWriter and BufferedReader from the socket so we
-				// can do two-way text-based I/O.
-				game.sockOut = new BufferedWriter(
-				new OutputStreamWriter(game.socket.getOutputStream()));
-				game.sockIn = new BufferedReader(
-				new InputStreamReader(game.socket.getInputStream()));*/
-
 				game.socket = new Socket(game.hostName, game.portNumber);
 				game.sockOut = game.socket.getOutputStream();
 				game.sockIn =
