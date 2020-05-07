@@ -53,7 +53,7 @@ class env():
                         self.dead=1
                 self.reward-=0.1
 
-                return self.reward, self.state, self.dead, full_msg
+                return self.state, self.reward, self.dead, 'live' ,full_msg
 
         def preprocess_statefile(self, filestate):
                 f = open(filestate, "r")
@@ -70,7 +70,7 @@ class env():
                 self.win = float(is_win)
 
         def reset(self):
-                _,state,_,_ = self.step(4,'') #stay
+                state,_,_,_,_ = self.step(4,'') #stay
                 return(state)
 
 
