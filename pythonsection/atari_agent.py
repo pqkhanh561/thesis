@@ -11,7 +11,7 @@ from env import env
 
 MAX_EXPERIENCES = 500000
 MIN_EXPERIENCES = 50000
-TARGET_UPDATE_PERIOD = 10000
+TARGET_UPDATE_PERIOD = 50000
 K = 5
 MAX_STEP=10000
 
@@ -59,15 +59,10 @@ class DQN:
             self.G = tf.placeholder(tf.float32, shape=(None,), name='G')
             self.actions = tf.placeholder(tf.int32, shape=(None,), name='actions')
 
-            #Z = tf.transpose(Z, [0,2,3,1])
-            cnn1 = tf.contrib.layers.fully_connected(self.X, 64, activation_fn=tf.nn.relu)
-            cnn2 = tf.contrib.layers.fully_connected(cnn1, 128, activation_fn=tf.nn.relu)
-            cnn3 = tf.contrib.layers.fully_connected(cnn2, 64, activation_fn=tf.nn.relu)
+            fc1 = tf.contrib.layers.fully_connected(self.X, 128, activation_fn=tf.nn.relu)
+            fc2 = tf.contrib.layers.fully_connected(fc1, 64, activation_fn=tf.nn.relu)
 
-            #fc0 = tf.contrib.layers.flatten(cnn3)
-            #fc1 = tf.contrib.layers.fully_connected(fc0, 512)
-
-            self.predict_op = tf.contrib.layers.fully_connected(cnn3, K)
+            self.predict_op = tf.contrib.layers.fully_connected(fc2, K)
 
             selected_action_values = tf.reduce_sum(self.predict_op * tf.one_hot(self.actions, K), reduction_indices=[1])
 
@@ -133,8 +128,8 @@ class DQN:
 
 if __name__ == '__main__':
     gamma = 0.99
-    batch_sz = 32
-    num_episodes = 500
+    batch_sz = 32 
+    num_episodes = 500 
     total_t = 0
     experience_replay_buffer = []
     episode_rewards = np.zeros(num_episodes)
@@ -158,9 +153,13 @@ if __name__ == '__main__':
         obs = env.reset()
         state = obs
 
+        #while True:
+        #    env.reset()
+
         for i in tqdm(range(MIN_EXPERIENCES)):
             action = np.random.randint(0,K)
             obs, reward, done, _, full_msg= env.step(action,full_msg)
+            #print(obs)
             if done == 1:
                 done = True
             else: 
@@ -178,7 +177,7 @@ if __name__ == '__main__':
 
         for i in range(num_episodes):
             t0 = datetime.now()
-
+            
             obs = env.reset()
             state = obs
             loss = None
@@ -199,6 +198,8 @@ if __name__ == '__main__':
                 action = model.sample_action(state, epsilon)
                 time_act = datetime.now()
                 obs, reward, done, _ , full_msg= env.step(action, full_msg)
+                #print(done)
+                #print(reward)
                 #print("Render time: ",datetime.now() - time_act)
                 time_act = datetime.now() - time_act
                 if done == 1:
@@ -251,9 +252,10 @@ if __name__ == '__main__':
 
         plt.plot(last_100_avgs)
         plt.xlabel('episodes')
-        plt.ylablel('Average Rewards')
-        plt.show()
-        env.close()
+        plt.ylabel('Average Rewards')
+#        plt.show()
+        plt.savefig('result.png')
+        #env.close()
             
 
 

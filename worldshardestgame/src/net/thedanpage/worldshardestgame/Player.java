@@ -146,7 +146,6 @@ public class Player {
 
 
 
-
     void checkCollisionUp(GameLevel level) {
         if (getRelativeTile(level, this.x - 14, this.y + 24, 0, -1) != null &&
                 getRelativeTile(level, this.x - 14, this.y + 24, 0, -1).getType() == 0 ||
@@ -254,19 +253,7 @@ public class Player {
                         Game.gameState = Game.LEVEL_TITLE;
                         Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL_TITLE");
 
-                        //Wait 1.75 seconds then start the level.
-                        //new Thread() {
-                        //	public void run() {
-                        //		try {
-                        //			Thread.sleep(1750);
-                        //		} catch (InterruptedException e) {
-                        //			Game.easyLog(Game.logger, Level.SEVERE, Game.getStringFromStackTrace(e));
-                        //		}
-                        //		Game.gameState = Game.LEVEL;
-                        //		Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL");
-                        //	}
-                        //}.start();
-                    }
+                      }
                 }
             }
         }
@@ -278,7 +265,6 @@ public class Player {
 
         if (key!=null && key.trim().equalsIgnoreCase("reset")){
             this.dead=true;
-            System.out.println("true");
             this.opacity=0;
         }         
         if (this.dead) {
@@ -287,7 +273,6 @@ public class Player {
             if (this.opacity < 0) this.opacity = 0;
 
             if (this.opacity == 0) {
-                System.out.println("respawn");
                 this.dead = false;
                 this.opacity = 255;
                 this.respawn(level);
@@ -296,10 +281,7 @@ public class Player {
             if (Input.up.isPressed && !this.collidingUp) this.y --;
             if (Input.down.isPressed && !this.collidingDown) this.y ++;
             if (Input.left.isPressed && !this.collidingLeft){
-                //dem++;
-                //System.out.println(dem);
                 this.x --;
-
             }             
             if (Input.right.isPressed && !this.collidingRight) this.x ++;
 

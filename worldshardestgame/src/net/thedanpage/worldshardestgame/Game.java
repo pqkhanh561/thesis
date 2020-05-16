@@ -53,13 +53,6 @@ import java.io.OutputStream;
 
 public class Game extends JPanel implements ActionListener {
 	// The remote process will run on localhost and listen on
-	// port 65432.
-	/*public static final String REMOTE_HOST = "";
-	  public static final int REMOTE_PORT = 7;
-
-	  public Socket socket = null;
-	  public BufferedWriter sockOut = null;
-	  public BufferedReader sockIn = null; */
 	static String hostName = "localhost";
 	static int portNumber = 12345;
 	Socket socket = null;
@@ -168,9 +161,11 @@ public class Game extends JPanel implements ActionListener {
 					userInput = userInput + (char)ch; 
 				}
 				player.key = userInput;
-				if (userInput == "reset"){
-					level.init(player, 1);
+				if (userInput.trim().equalsIgnoreCase("reset")){
+					level.reset_dots();
+					//System.out.println("Game init");
 				}
+				
 				//System.out.println("echo: " + userInput);
 
 

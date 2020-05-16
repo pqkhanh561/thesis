@@ -28,6 +28,10 @@ public class Dot {
 	
 	/** The current Y position of the dot. */
 	private double y;
+
+	private double x_original;
+
+	private double y_original;
 	
 	/**
 	 * The X coordinate of the dot, snapped to the grid of 40x40 tiles.
@@ -67,6 +71,8 @@ public class Dot {
 	public Dot(int x, int y, Point pos1, Point pos2, double speed, boolean moveToPos1, boolean vertMovement) {
 		this.x = x*40;
 		this.y = y*40;
+		this.x_original = this.x;
+		this.y_original = this.y;
 		this.snapX = x;
 		this.snapY = y;
 		this.pos1 = pos1;
@@ -77,6 +83,10 @@ public class Dot {
 	}
 	
 	
+	public void reset(){
+		this.x = this.x_original;
+		this.y = this.y_original;
+	}
 	
 	public void draw(Graphics g) {
 		g.setColor(Color.BLACK);

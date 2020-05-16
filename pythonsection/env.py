@@ -1,6 +1,7 @@
 import subprocess
 import time
 import numpy as np
+import math
 
 HEADERSIZE = 70
 ACTION_DICT = ['up   ','down ','right','left ','stay ','reset']
@@ -14,6 +15,10 @@ class env():
                 self.socket = socket
                 
         def step(self, action, full_msg):
+                self.reward = 0
+                self.dead = 0
+                self.win = 0
+                self.state = None
                 #TODO: attach action to send to remote 
                 #Require: action text need have length 5
                 
@@ -51,7 +56,9 @@ class env():
                 if self.win==1:
                         self.reward+=100
                         self.dead=1
-                self.reward-=0.1
+
+                #Reward: Distance between the goal position and the agent
+                self.reward-= math.sqrt(pow(abs(160-self.state[0]),2) + pow(abs(720-self.state[1]),2))
 
                 return self.state, self.reward, self.dead, 'live' ,full_msg
 
@@ -74,9 +81,8 @@ class env():
                 return(state)
 
 
-#if __name__=="__main__":
-#        e= env()
-#        e.reset()
-#        while(True):
-#                e.step(1);
-#                time.sleep(0)
+if __name__=="__main__":
+        e= env()
+        e.reset()
+        while(True):
+                e.step(5);
