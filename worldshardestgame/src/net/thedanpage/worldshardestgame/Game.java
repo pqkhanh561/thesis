@@ -127,21 +127,33 @@ public class Game extends JPanel implements ActionListener {
 
 	//Function return state
 	//Fix: The length constant by 70
-	private String state_string(){
+	private String state_string(Player player, GameLevel level){
 		String t  = Double.toString(player.getX()) + "," + Double.toString(player.getY()) + ","; 
 		for (Dot ob: level.dots){
 			String tmp  = Double.toString(ob.getX()) + "," + Double.toString(ob.getY())+ ",";
 			t = t + tmp;
 		}
+
+		//Return dead status
 		if (player.dead){
 			t = t + "1,";
 		}
 		else t = t + "0,";
+
+		//Return win status
 		if (game.levelNum > game.currentlevel){
-			t = t + "1";
+			t = t + "1,";
 		}
-		else t = t+ "0"; 
+		else t = t+ "0,"; 
 		
+		//return type of Tile
+		if (player.getTile(level)!=null){
+			t = t + Integer.toString(player.getTile(level).getType());
+			System.out.println(player.getTile(level));
+		}
+
+
+		//Ignore the starting 
 		if (t.length() > 50){
 			is_begin=false;
 		}
@@ -170,7 +182,7 @@ public class Game extends JPanel implements ActionListener {
 
 
 				//Write data to socket
-				char[] output = state_string().toCharArray();
+				char[] output = state_string(player, level).toCharArray();
 				for (char x :output){
 					game.sockOut.write((int) x);
 				}
@@ -186,7 +198,7 @@ public class Game extends JPanel implements ActionListener {
 			render(g);
 			try{
 				if (is_begin==true){
-					state_string();
+					state_string(player, level);
 				}
 				else{
 					give_socket();

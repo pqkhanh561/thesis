@@ -14,6 +14,7 @@ MIN_EXPERIENCES = 50000
 TARGET_UPDATE_PERIOD = 50000
 K = 5
 MAX_STEP=10000
+np.random.seed(4);
 
 #Sever setup
 import socket   
@@ -129,7 +130,7 @@ class DQN:
 if __name__ == '__main__':
     gamma = 0.99
     batch_sz = 32 
-    num_episodes = 500 
+    num_episodes = 1000 
     total_t = 0
     experience_replay_buffer = []
     episode_rewards = np.zeros(num_episodes)
@@ -158,7 +159,10 @@ if __name__ == '__main__':
 
         for i in tqdm(range(MIN_EXPERIENCES)):
             action = np.random.randint(0,K)
-            obs, reward, done, _, full_msg= env.step(action,full_msg)
+            for _ in range(0,10):
+                obs, reward, done, _, full_msg= env.step(action,full_msg)
+                if done==1: 
+                    break
             #print(obs)
             if done == 1:
                 done = True
@@ -189,15 +193,17 @@ if __name__ == '__main__':
 
             done = False
             #while not done:
-            for _ in range(MAX_STEP):
-
+            while True:
                 if total_t % TARGET_UPDATE_PERIOD == 0:
                     target_model.copy_from(model)
                     print("Copied model parameters to target network, total_t = %s, period = %s" % (total_t, TARGET_UPDATE_PERIOD))
                 
                 action = model.sample_action(state, epsilon)
                 time_act = datetime.now()
-                obs, reward, done, _ , full_msg= env.step(action, full_msg)
+                for _ in range(0,10):
+                    obs, reward, done, _ , full_msg= env.step(action, full_msg)
+                    if done==1:
+                        break
                 #print(done)
                 #print(reward)
                 #print("Render time: ",datetime.now() - time_act)
@@ -234,6 +240,8 @@ if __name__ == '__main__':
                 total_t += 1
 
                 epsilon = max(epsilon - epsilon_change, epsilon_min)
+                if done:
+                    break
 
             duration = datetime.now() - t0
 

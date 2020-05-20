@@ -19,7 +19,6 @@ class env():
                 self.dead = 0
                 self.win = 0
                 self.state = None
-                #TODO: attach action to send to remote 
                 #Require: action text need have length 5
                 
                 self.socket.send(bytes(ACTION_DICT[action],encoding='utf8'))
@@ -46,19 +45,32 @@ class env():
                 #8 next is position of enemy
                 #1 next is agent dead
                 #1 next is is win 
+                # type of tile that agent is standing
                 list_feature = msg.split(',')
                 self.state = [float(i) for i in list_feature[0:10]]
+
+                #Simple state
+                for i in range(2,10):
+                    self.state[i] = int(self.state[i])
+               
+
                 self.dead = float(list_feature[10])
                 self.win = float(list_feature[11])
-                
+                tile = float(list_feature[12])
+
+                #REWARD for env
                 if self.dead==1:
                         self.reward-=3
                 if self.win==1:
                         self.reward+=100
                         self.dead=1
+                if tile==1:
+                        self.reward+=1
+                elif tile==2:
+                        self.reward-=1
 
                 #Reward: Distance between the goal position and the agent
-                self.reward-= math.sqrt(pow(abs(160-self.state[0]),2) + pow(abs(720-self.state[1]),2))
+                #self.reward-= math.sqrt(pow(abs(160-self.state[0]),2) + pow(abs(720-self.state[1]),2))
 
                 return self.state, self.reward, self.dead, 'live' ,full_msg
 
