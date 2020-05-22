@@ -67,7 +67,7 @@ class env():
                 if tile==1:
                         self.reward+=1
                 elif tile==2:
-                        self.reward-=1
+                        self.reward-=0
 
                 #Reward: Distance between the goal position and the agent
                 #self.reward-= math.sqrt(pow(abs(160-self.state[0]),2) + pow(abs(720-self.state[1]),2))
