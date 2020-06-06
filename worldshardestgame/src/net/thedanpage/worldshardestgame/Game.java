@@ -60,6 +60,8 @@ public class Game extends JPanel implements ActionListener {
 	OutputStream sockOut=null;
 	static int HEADERSIZE=70;
 
+	private int win_state = 0;
+
 	/** An instance of the game. */
 	private static Game game;
 
@@ -134,6 +136,13 @@ public class Game extends JPanel implements ActionListener {
 			t = t + tmp;
 		}
 
+		//If number of enemy not enough add more until have 4
+		int number_add_more = 4;
+		while (number_add_more - level.dots.size() > 0){
+			t += "0,0,";
+			number_add_more--;
+		}
+
 		//Return dead status
 		if (player.dead){
 			t = t + "1,";
@@ -141,20 +150,20 @@ public class Game extends JPanel implements ActionListener {
 		else t = t + "0,";
 
 		//Return win status
-		if (game.levelNum > game.currentlevel){
+		if (player.win > win_state){
 			t = t + "1,";
+			win_state = player.win;
 		}
 		else t = t+ "0,"; 
 		
 		//return type of Tile
 		if (player.getTile(level)!=null){
 			t = t + Integer.toString(player.getTile(level).getType());
-			System.out.println(player.getTile(level));
+			//System.out.println(player.getTile(level));
 		}
 
-
 		//Ignore the starting 
-		if (t.length() > 50){
+		if (level.dots.size() > 0){
 			is_begin=false;
 		}
 		while (t.length()<HEADERSIZE){
@@ -175,11 +184,7 @@ public class Game extends JPanel implements ActionListener {
 				player.key = userInput;
 				if (userInput.trim().equalsIgnoreCase("reset")){
 					level.reset_dots();
-					//System.out.println("Game init");
 				}
-				
-				//System.out.println("echo: " + userInput);
-
 
 				//Write data to socket
 				char[] output = state_string(player, level).toCharArray();
@@ -187,7 +192,6 @@ public class Game extends JPanel implements ActionListener {
 					game.sockOut.write((int) x);
 				}
 			} catch (IOException ie){
-				System.out.println("Can't connect to server");
 			}
 		}
 

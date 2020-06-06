@@ -91,6 +91,7 @@ public class Dot {
 	public void draw(Graphics g) {
 		g.setColor(Color.BLACK);
 		g.fillOval((int) (this.x - 10) + 20 , (int) (this.y - 10) + 20 + 22, 20, 20);
+
 		g.setColor(Color.BLUE);
 		g.fillOval((int) (this.x - 8) + 20 , (int) (this.y - 8) + 20 + 22, 16, 16);
 	}
@@ -106,13 +107,13 @@ public class Dot {
 				this.x -= this.speed;
 			else
 				this.y -= this.speed;
-			if (this.snapX < this.pos1.x || this.snapY < this.pos1.y) this.moveToPos1 = false;
+			if (this.snapX <= this.pos1.x || this.snapY < this.pos1.y) this.moveToPos1 = false;
 		} else {
 			if (!this.vertMovement)
 				this.x += this.speed;
 			else
 				this.y += this.speed;
-			if (this.snapX > this.pos2.x || this.snapY > this.pos2.y) this.moveToPos1 = true;
+			if (this.snapX >= this.pos2.x || this.snapY > this.pos2.y) this.moveToPos1 = true;
 		}
 	}
 	

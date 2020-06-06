@@ -8,13 +8,14 @@ from datetime import datetime
 from scipy.misc import imresize
 from tqdm import tqdm
 from env import env
+import sys
 
-MAX_EXPERIENCES = 500000
-MIN_EXPERIENCES = 50
+MAX_EXPERIENCES = 50000  #500000
+MIN_EXPERIENCES = 5000
 TARGET_UPDATE_PERIOD = 1000
 K = 5
-MAX_STEP=10000
-np.random.seed(4);
+MAX_STEP=100
+np.random.seed(3);
 
 #Sever setup
 import socket   
@@ -29,8 +30,6 @@ s.bind((host, port))    # Bind to the port
 s.listen(5) # Now wait for client connection.
 c, addr = s.accept()    # Establish connection with client.
 print ('Got connection from', addr)
-
-env = env(c)
 
 
 def update_state(state, obs):
@@ -48,7 +47,7 @@ def learn(model, targets_model, experience_replay_buffer, gamma, batch_size):
     return loss
 
 class DQN:
-    def __init__(self, K, scope, save_path = 'model/env.ckpt'):
+    def __init__(self, K, scope, input_shape, save_path = 'model/env.ckpt'):
         self.K = K
         self.scope = scope
         self.save_path = save_path
@@ -56,7 +55,7 @@ class DQN:
         with tf.variable_scope(scope):
 
             #inputs and targets
-            self.X = tf.placeholder(tf.float32, shape=(None, 10), name='X')
+            self.X = tf.placeholder(tf.float32, shape=(None, input_shape), name='X')
             self.G = tf.placeholder(tf.float32, shape=(None,), name='G')
             self.actions = tf.placeholder(tf.int32, shape=(None,), name='actions')
 
@@ -128,21 +127,25 @@ class DQN:
         self.session.run(ops)
 
 if __name__ == '__main__':
+    number_enemy = int(sys.argv[1])
     gamma = 0.99
     batch_sz = 32 
-    num_episodes = 1000 
+    num_episodes = 500 
     total_t = 0
     experience_replay_buffer = []
     episode_rewards = np.zeros(num_episodes)
     last_100_avgs = []
     full_msg='' 
+    env = env(c, number_enemy)
+
+
 
     epsilon = 1.0
     epsilon_min = 0.1
-    epsilon_change = (epsilon - epsilon_min) / 500000
+    epsilon_change = (epsilon - epsilon_min) / 5000 #500000
 
-    model = DQN(K=K, scope="model")
-    target_model = DQN(K=K, scope="target_model")
+    model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
+    target_model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="target_model")
 
     with tf.Session() as sess:
         model.set_session(sess)
@@ -157,12 +160,11 @@ if __name__ == '__main__':
         #while True:
         #    env.reset()
 
-        for i in tqdm(range(MIN_EXPERIENCES)):
+        for i in range(MIN_EXPERIENCES):
+        #for i in tqdm(range(MIN_EXPERIENCES)):
             action = np.random.randint(0,K)
-            for _ in range(0,10):
-                obs, reward, done, _, full_msg= env.step(action,full_msg)
-                if done==1: 
-                    break
+            obs, reward, done, _, full_msg= env.step(action,full_msg)
+            #time.sleep(0.5)
             #print(obs)
             if done == 1:
                 done = True
@@ -194,17 +196,15 @@ if __name__ == '__main__':
             done = False
             #while not done:
             while True:
+            #for _ in range(0, MAX_STEP):
                 if total_t % TARGET_UPDATE_PERIOD == 0:
                     target_model.copy_from(model)
                     print("Copied model parameters to target network, total_t = %s, period = %s" % (total_t, TARGET_UPDATE_PERIOD))
                 
                 action = model.sample_action(state, epsilon)
                 time_act = datetime.now()
-                for _ in range(0,10):
-                    obs, reward, done, _ , full_msg= env.step(action, full_msg)
-                    if done==1:
-                        break
-                #print(done)
+                obs, reward, done, _ , full_msg= env.step(action, full_msg)
+                #time.sleep(0.05)
                 #print(reward)
                 #print("Render time: ",datetime.now() - time_act)
                 time_act = datetime.now() - time_act

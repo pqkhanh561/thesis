@@ -7,12 +7,13 @@ HEADERSIZE = 70
 ACTION_DICT = ['up   ','down ','right','left ','stay ','reset']
 
 class env():
-        def __init__(self, socket):
+        def __init__(self, socket, number_enemy):
                 self.state = None #Include position of agen and position of enemy
                 self.reward = 0
                 self.dead = 0   #1: is dead
                 self.win = 0
                 self.socket = socket
+                self.num_enemy = number_enemy
                 
         def step(self, action, full_msg):
                 self.reward = 0
@@ -47,17 +48,17 @@ class env():
                 #1 next is is win 
                 # type of tile that agent is standing
                 list_feature = msg.split(',')
-                self.state = [float(i) for i in list_feature[0:10]]
+                self.state = [float(i) for i in list_feature[0:(2*self.num_enemy+1)+1]]
 
                 #Simple state
-                for i in range(2,10):
-                    self.state[i] = int(self.state[i])
+                #for i in range(2,10):
+                #    self.state[i] = int(self.state[i])
                
 
                 self.dead = float(list_feature[10])
                 self.win = float(list_feature[11])
                 tile = float(list_feature[12])
-
+               
                 #REWARD for env
                 if self.dead==1:
                         self.reward-=3
@@ -65,7 +66,7 @@ class env():
                         self.reward+=100
                         self.dead=1
                 if tile==1:
-                        self.reward+=1
+                        self.reward-=0
                 elif tile==2:
                         self.reward-=0
 
