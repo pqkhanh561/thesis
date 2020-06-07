@@ -5,7 +5,6 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from datetime import datetime
-from scipy.misc import imresize
 from tqdm import tqdm
 from env import env
 import sys
@@ -133,7 +132,7 @@ if __name__ == '__main__':
     num_action_act = [0,0,0,0,0]
     gamma = 0.99
     batch_sz = 32 
-    num_episodes = 500 
+    num_episodes = 3000 
     total_t = 0
     experience_replay_buffer = []
     episode_rewards = np.zeros(num_episodes)
@@ -145,7 +144,7 @@ if __name__ == '__main__':
 
     epsilon = 1.0
     epsilon_min = 0.1
-    epsilon_change = (epsilon - epsilon_min) / 10000#500000
+    epsilon_change = (epsilon - epsilon_min) / 50000#500000
 
     model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
     target_model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="target_model")
