@@ -10,9 +10,9 @@ from tqdm import tqdm
 from env import env
 import sys
 
-MAX_EXPERIENCES = 50000  #500000
-MIN_EXPERIENCES = 5000
-TARGET_UPDATE_PERIOD = 1000
+MAX_EXPERIENCES = 1000000 #500000
+MIN_EXPERIENCES = 50000
+TARGET_UPDATE_PERIOD = 10000
 K = 5
 MAX_STEP=100
 np.random.seed(3);
@@ -40,7 +40,7 @@ def learn(model, targets_model, experience_replay_buffer, gamma, batch_size):
     samples = random.sample(experience_replay_buffer, batch_size)
     states, actions, rewards, next_states, dones = map(np.array, zip(*samples))
     next_Qs = targets_model.predict(next_states)
-    next_Q = np.argmax(next_Qs, axis=1)
+    next_Q = np.amax(next_Qs, axis=1)
     targets = rewards + np.invert(dones).astype(np.float32) * gamma * next_Q
 
     loss = model.update(states, actions, targets)
@@ -59,8 +59,8 @@ class DQN:
             self.G = tf.placeholder(tf.float32, shape=(None,), name='G')
             self.actions = tf.placeholder(tf.int32, shape=(None,), name='actions')
 
-            fc1 = tf.contrib.layers.fully_connected(self.X, 128, activation_fn=tf.nn.relu)
-            fc2 = tf.contrib.layers.fully_connected(fc1, 64, activation_fn=tf.nn.relu)
+            fc1 = tf.contrib.layers.fully_connected(self.X, 32, activation_fn=tf.nn.relu)
+            fc2 = tf.contrib.layers.fully_connected(fc1, 18, activation_fn=tf.nn.relu)
 
             self.predict_op = tf.contrib.layers.fully_connected(fc2, K)
 
@@ -84,7 +84,9 @@ class DQN:
         self.session = sess
 
     def predict(self, states):
-        return self.session.run(self.predict_op, feed_dict={self.X:states})
+        tmp = self.session.run(self.predict_op, feed_dict={self.X:states})
+        #return self.session.run(self.predict_op, feed_dict={self.X:states})
+        return tmp
     
     def sample_action(self, x, eps):
         if np.random.random() < eps:
@@ -128,6 +130,7 @@ class DQN:
 
 if __name__ == '__main__':
     number_enemy = int(sys.argv[1])
+    num_action_act = [0,0,0,0,0]
     gamma = 0.99
     batch_sz = 32 
     num_episodes = 500 
@@ -142,7 +145,7 @@ if __name__ == '__main__':
 
     epsilon = 1.0
     epsilon_min = 0.1
-    epsilon_change = (epsilon - epsilon_min) / 5000 #500000
+    epsilon_change = (epsilon - epsilon_min) / 10000#500000
 
     model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
     target_model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="target_model")
@@ -160,9 +163,10 @@ if __name__ == '__main__':
         #while True:
         #    env.reset()
 
-        for i in range(MIN_EXPERIENCES):
-        #for i in tqdm(range(MIN_EXPERIENCES)):
+        #for i in range(MIN_EXPERIENCES):
+        for i in tqdm(range(MIN_EXPERIENCES)):
             action = np.random.randint(0,K)
+            num_action_act[action] +=1
             obs, reward, done, _, full_msg= env.step(action,full_msg)
             #time.sleep(0.5)
             #print(obs)
@@ -179,7 +183,7 @@ if __name__ == '__main__':
             else:
                 state = next_state
 
-
+        print(num_action_act)
 
         for i in range(num_episodes):
             t0 = datetime.now()
@@ -202,6 +206,7 @@ if __name__ == '__main__':
                     print("Copied model parameters to target network, total_t = %s, period = %s" % (total_t, TARGET_UPDATE_PERIOD))
                 
                 action = model.sample_action(state, epsilon)
+                num_action_act[action] +=1
                 time_act = datetime.now()
                 obs, reward, done, _ , full_msg= env.step(action, full_msg)
                 #time.sleep(0.05)
@@ -263,6 +268,7 @@ if __name__ == '__main__':
         plt.ylabel('Average Rewards')
 #        plt.show()
         plt.savefig('result.png')
+        print(num_action_act)
         #env.close()
             
 
