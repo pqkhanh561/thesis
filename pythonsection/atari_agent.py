@@ -132,7 +132,7 @@ if __name__ == '__main__':
     num_action_act = [0,0,0,0,0]
     gamma = 0.99
     batch_sz = 32 
-    num_episodes = 3000 
+    num_episodes = 10000 
     total_t = 0
     experience_replay_buffer = []
     episode_rewards = np.zeros(num_episodes)
