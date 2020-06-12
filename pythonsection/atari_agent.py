@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
     epsilon = 1.0
     epsilon_min = 0.1
-    epsilon_change = (epsilon - epsilon_min) / 50000#500000
+    epsilon_change = (epsilon - epsilon_min) / 100000#500000
 
     model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
     target_model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="target_model")
