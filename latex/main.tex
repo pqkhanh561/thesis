@@ -4,9 +4,11 @@
 \usepackage[utf8]{vietnam}
 \usepackage{blindtext}
 \usepackage{listings}
-\usepackage{graphicx}
 \usepackage[numbers]{natbib}
 \usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
 \renewcommand{\baselinestretch}{1.5}
 \begin{document}
 
@@ -99,11 +101,29 @@ Cắt giảm bản đồ khi giữ lại chỉ có 2 ô an toàn.\\
 \end{center}
 Kết quả cho được không được như kỳ vọng sau khoảng 200 episodes, agent nhất quyết không ra khỏi vùng an toàn nữa.
 \subsection{Môi trường đơn giản}
-Việc đơn giản hóa giúp điều chỉnh model hoạt động 
+Việc đơn giản hóa giúp điều chỉnh model hoạt động linh hoạt hơn\\
 \begin{center}
-\includegraphics[width=0.95\textwidth]{photo/ThesisRES/1eUp.png}\\    
-
+\includegraphics[width=0.5\textwidth]{photo/ThesisRES/1eUp.png}\\
 \end{center}
-
-
+Sử dụng với model gồm Q-learning gồm 2 layer (32 và 16), epsilon change\footnote{số lần thay đổi đổi tham số epsilon sau từng bước}(ES), số episode(eps). Các tham số còn lại sử dụng theo bài báo của deepmind.
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{.32\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{pythonsection/result/result_1e_10000epsilon_500eps.png} 
+\caption{10000 ES, 500 eps}
+\label{fig:subim1}
+\end{subfigure}
+\begin{subfigure}[b]{.32\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{pythonsection/result/result_1e_50000epsilon_500eps.png} 
+\caption{50000 ES, 500 eps}
+\label{fig:subim2}
+\end{subfigure}
+\begin{subfigure}[b]{.32\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{pythonsection/result/result_1e_50000epsilon_1000eps.png} 
+\caption{50000 ES và 1000 eps}
+\label{fig:subim3}
+\end{subfigure}
+\end{figure}\\
+Dựa vào kết quả trên có thể thấy sự ảnh hưởng của epsilon change và số lượng episode đối với kết quả của quá trình train là rất nhiều. Với hình (a) khi 
+exploitation\footnote{agent thực hiện hành động tốt nhất} chiếm phần lớn thời gian agent hoạt động do đó quá trình huấn luyện không hiệu quả. Đối với hình (b) khi điểu chỉnh để exploration\footnote{agent thực hiện hành động ngẫu nhiên} và exploitation trở nên cân bằng hơn thì kết quả tốt hơn nhưng agent không đủ thời gian để đạt đến kết quả tốt nhất. Cuối cùng, kết quả có được ở hình (c) thể hiện agent hoạt động rất tốt.
 \end{document}
