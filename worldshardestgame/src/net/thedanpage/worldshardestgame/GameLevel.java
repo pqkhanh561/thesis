@@ -37,6 +37,8 @@ public class GameLevel {
 	
 	/** A list of all of the level's dots. */
 	public ArrayList<Dot> dots;
+
+	private ArrayList<Dot> dots_init;
 	
 	/** A list of all of the level's coins. **/
 	public ArrayList<Coin> coins;
@@ -52,7 +54,7 @@ public class GameLevel {
 		this.id = -1;
 		this.levelTitle = "\"Intimidating message\nhere\"";
 	}
-	
+
 	public GameLevel(Point spawn, int id) {
 		this.levelArea = new Area();
 		this.tileMap = new ArrayList<Tile>();
@@ -62,6 +64,12 @@ public class GameLevel {
 		this.levelTitle = "\"Intimidating message\nhere\"";
 	}
 	
+	public void reset_dots(){
+		for (Dot dot : this.dots){
+			dot.reset();
+		}
+	}
+
 	/**
 	 * @return spawnPoint
 	 */
@@ -259,6 +267,9 @@ public class GameLevel {
 							new Rectangle(t.getX() - 3, t.getY() - 3 + 22, 46, 46)));
 				}
 			}
+			
+			//Print tileMap
+			//System.out.println(this.tileMap);
 		} catch (Exception e) {
 			Game.easyLog(Game.logger, Level.SEVERE, "Map unable to be loaded:\n" + Game.getStringFromStackTrace(e));
 		}
@@ -287,6 +298,7 @@ public class GameLevel {
 							Boolean.parseBoolean(dotData[6])
 						));
 			}
+			//Create a memory of dots
 			Game.easyLog(Game.logger, Level.INFO, "All dots have been added");
 		} catch (Exception e) {
 			if (e.getClass().getName() != "java.lang.ArrayIndexOutOfBoundsException")

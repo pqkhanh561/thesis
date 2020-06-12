@@ -11,12 +11,16 @@ public class TextFileWriter {
 
 	static BufferedWriter bw = null;
 
-	public static void appendToFile(String filepath, String s) {
+    public static void appendToFile(String f, String s){
+        appendToFile(f,s, true);
+    }
+
+	public static void appendToFile(String filepath, String s, boolean nl) {
 		try {
 			// APPEND MODE SET HERE
 			bw = new BufferedWriter(new FileWriter(filepath, true));
 			bw.write(s);
-			bw.newLine();
+			if (nl==true) bw.newLine();
 			bw.flush();
 		} catch (IOException e) {
 			System.out.println(e);
