@@ -101,6 +101,7 @@ Cắt giảm bản đồ khi giữ lại chỉ có 2 ô an toàn.\\
 \end{center}
 Kết quả cho được không được như kỳ vọng sau khoảng 200 episodes, agent nhất quyết không ra khỏi vùng an toàn nữa.
 \subsection{Môi trường đơn giản}
+\subsubsection{1 Enemy}
 Việc đơn giản hóa giúp điều chỉnh model hoạt động linh hoạt hơn\\
 \begin{center}
 \includegraphics[width=0.5\textwidth]{photo/ThesisRES/1eUp.png}\\
@@ -126,4 +127,23 @@ Sử dụng với model gồm Q-learning gồm 2 layer (32 và 16), epsilon chan
 \end{figure}\\
 Dựa vào kết quả trên có thể thấy sự ảnh hưởng của epsilon change và số lượng episode đối với kết quả của quá trình train là rất nhiều. Với hình (a) khi 
 exploitation\footnote{agent thực hiện hành động tốt nhất} chiếm phần lớn thời gian agent hoạt động do đó quá trình huấn luyện không hiệu quả. Đối với hình (b) khi điểu chỉnh để exploration\footnote{agent thực hiện hành động ngẫu nhiên} và exploitation trở nên cân bằng hơn thì kết quả tốt hơn nhưng agent không đủ thời gian để đạt đến kết quả tốt nhất. Cuối cùng, kết quả có được ở hình (c) thể hiện agent hoạt động rất tốt.
+
+\subsubsection{2 Enemy}
+Áp dụng model ở trên cho môi trường có 2 enemy. Agent cần thêm 2000 episode để có thể tìm được đường đi tối ưu.\\
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{.32\textwidth}
+    \includegraphics[width=0.9\linewidth, height=5cm]{pythonsection/result/result_2e_50000epsilon_1000eps.png}
+    \caption{50000 ES và 1000 eps}
+    \label{fig:2e1}
+    \end{subfigure}
+    \begin{subfigure}[b]{.32\textwidth}
+    \includegraphics[width=0.9\linewidth, height=5cm]{pythonsection/result/result_2e_50000epsilon_3000eps.png}
+    \caption{50000 ES và 3000 eps}
+    \label{fig:2e2}
+    \end{subfigure}
+\end{figure}
+
+\subsection{3 Enemy}
+Dựa vào 2 kết quả trên có thể thấy khi agent có xu hướng tốt hơn trong các episode cuối cùng thì khi thêm số lần train sẽ cải thiện kết quả. Tuy nhiên với kết quả của trường hợp này lại không có xu hướng tăng. 
 \end{document}
