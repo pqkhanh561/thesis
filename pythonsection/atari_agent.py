@@ -10,7 +10,7 @@ from env import env
 import sys
 
 MAX_EXPERIENCES = 1000000 #500000
-MIN_EXPERIENCES = 50000
+MIN_EXPERIENCES = 50
 TARGET_UPDATE_PERIOD = 10000
 K = 5
 MAX_STEP=100
@@ -132,7 +132,7 @@ if __name__ == '__main__':
     num_action_act = [0,0,0,0,0]
     gamma = 0.99
     batch_sz = 32 
-    num_episodes = 100000 
+    num_episodes = 1000 
     total_t = 0
     experience_replay_buffer = []
     episode_rewards = np.zeros(num_episodes)
@@ -252,11 +252,16 @@ if __name__ == '__main__':
             episode_rewards[i] = episode_reward
             time_per_step = total_time_training/num_steps_in_episode
 
-            last_100_avg = episode_rewards[max(0, i-100):i + 1].mean()
+            last_100_avg = episode_rewards[max(0, i-100):i].mean()
             last_100_avgs.append(last_100_avg)
-            print("Episode:", i,"Duration:", duration, "Num steps:", num_steps_in_episode,
-                    "Reward:", episode_reward, "Training time per step:","%.3f" % time_per_step,
-                    "Avg Reward (last 100):", "%.3f" % last_100_avg, "Epsilon:", "%.3f" % epsilon)
+            print(i)
+            print("last 100: ",last_100_avg)
+            print("reward ",episode_reward)
+            print("rewards ",episode_rewards)
+            print("")
+            ##print("Episode:", i,"Duration:", duration, "Num steps:", num_steps_in_episode,
+            ##        "Reward:", episode_reward, "Training time per step:","%.3f" % time_per_step,
+            ##        "Avg Reward (last 100):", "%.3f" % last_100_avg, "Epsilon:", "%.3f" % epsilon)
 
             if i % 50 ==0:
                 model.save(i)
