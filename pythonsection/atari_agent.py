@@ -10,11 +10,11 @@ from env import env
 import sys
 
 MAX_EXPERIENCES = 1000000 #500000
-MIN_EXPERIENCES = 50
+MIN_EXPERIENCES = 50000
 TARGET_UPDATE_PERIOD = 10000
 K = 5
 MAX_STEP=100
-np.random.seed(3);
+np.random.seed(12345);
 
 #Sever setup
 import socket   
@@ -58,10 +58,10 @@ class DQN:
             self.G = tf.placeholder(tf.float32, shape=(None,), name='G')
             self.actions = tf.placeholder(tf.int32, shape=(None,), name='actions')
 
-            fc1 = tf.contrib.layers.fully_connected(self.X, 64, activation_fn=tf.nn.relu)
-            fc2 = tf.contrib.layers.fully_connected(fc1, 32, activation_fn=tf.nn.relu)
+            self.fc1 = tf.contrib.layers.fully_connected(self.X, 12, activation_fn=tf.nn.relu, weights_initializer=tf.contrib.layers.xavier_initializer())
+            self.fc2 = tf.contrib.layers.fully_connected(self.fc1, 8, activation_fn=tf.nn.relu, weights_initializer=tf.contrib.layers.xavier_initializer())
 
-            self.predict_op = tf.contrib.layers.fully_connected(fc2, K)
+            self.predict_op = tf.contrib.layers.fully_connected(self.fc2, K)
 
             selected_action_values = tf.reduce_sum(self.predict_op * tf.one_hot(self.actions, K), reduction_indices=[1])
 
@@ -91,6 +91,12 @@ class DQN:
         if np.random.random() < eps:
             return np.random.choice(self.K)
         else:
+            print(x) 
+            print(self.session.run(self.fc1, feed_dict={self.X:[x]}))
+            print(self.session.run(self.fc2, feed_dict={self.X:[x]}))
+            print(self.session.run(self.predict_op, feed_dict={self.X:[x]}))
+            print("")
+            print("")
             return np.argmax(self.predict([x])[0])
 
     def load(self):
@@ -144,7 +150,7 @@ if __name__ == '__main__':
 
     epsilon = 1.0
     epsilon_min = 0.1
-    epsilon_change = (epsilon - epsilon_min) / 100000#500000
+    epsilon_change = (epsilon - epsilon_min) / 50000#500000
 
     model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
     target_model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="target_model")
@@ -158,10 +164,6 @@ if __name__ == '__main__':
         print("Filling experience replay buffer...")
         obs = env.reset()
         state = obs
-
-        #while True:
-        #    env.reset()
-
         #for i in range(MIN_EXPERIENCES):
         for i in tqdm(range(MIN_EXPERIENCES)):
             action = np.random.randint(0,K)
@@ -197,7 +199,6 @@ if __name__ == '__main__':
             episode_reward = 0
 
             done = False
-            #while not done:
             while True:
             #for _ in range(0, MAX_STEP):
                 if total_t % TARGET_UPDATE_PERIOD == 0:
@@ -208,9 +209,6 @@ if __name__ == '__main__':
                 num_action_act[action] +=1
                 time_act = datetime.now()
                 obs, reward, done, _ , full_msg= env.step(action, full_msg)
-                #time.sleep(0.05)
-                #print(reward)
-                #print("Render time: ",datetime.now() - time_act)
                 time_act = datetime.now() - time_act
                 if done == 1:
                     done = True
@@ -228,7 +226,6 @@ if __name__ == '__main__':
                 t0_2 = datetime.now()
                 loss = learn(model, target_model, experience_replay_buffer, gamma, batch_sz)
                 dt = datetime.now() - t0_2
-                #print("Learn time : ", dt)
 
                 #Confirm 
                 '''
@@ -254,14 +251,14 @@ if __name__ == '__main__':
 
             last_100_avg = episode_rewards[max(0, i-100):i].mean()
             last_100_avgs.append(last_100_avg)
-            print(i)
-            print("last 100: ",last_100_avg)
-            print("reward ",episode_reward)
-            print("rewards ",episode_rewards)
-            print("")
-            ##print("Episode:", i,"Duration:", duration, "Num steps:", num_steps_in_episode,
-            ##        "Reward:", episode_reward, "Training time per step:","%.3f" % time_per_step,
-            ##        "Avg Reward (last 100):", "%.3f" % last_100_avg, "Epsilon:", "%.3f" % epsilon)
+            #print(i)
+            #print("last 100: ",last_100_avg)
+            #print("reward ",episode_reward)
+            #print("rewards ",episode_rewards)
+            #print("")
+            print("Episode:", i,"Duration:", duration, "Num steps:", num_steps_in_episode,
+                    "Reward:", episode_reward, "Training time per step:","%.3f" % time_per_step,
+                    "Avg Reward (last 100):", "%.3f" % last_100_avg, "Epsilon:", "%.3f" % epsilon)
 
             if i % 50 ==0:
                 model.save(i)
