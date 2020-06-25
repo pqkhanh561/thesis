@@ -29,7 +29,7 @@ s.bind((host, port))    # Bind to the port
 s.listen(5) # Now wait for client connection.
 c, addr = s.accept()    # Establish connection with client.
 print ('Got connection from', addr)
-
+global env 
 
 def update_state(state, obs):
     obs_small = preprocess(obs)
@@ -133,8 +133,8 @@ class DQN:
         
         self.session.run(ops)
 
-if __name__ == '__main__':
-    number_enemy = int(sys.argv[1])
+#if __name__ == '__main__':
+def trainning():
     num_action_act = [0,0,0,0,0]
     gamma = 0.99
     batch_sz = 32 
@@ -144,7 +144,6 @@ if __name__ == '__main__':
     episode_rewards = np.zeros(num_episodes)
     last_100_avgs = []
     full_msg='' 
-    env = env(c, number_enemy)
 
 
 
@@ -271,7 +270,52 @@ if __name__ == '__main__':
         plt.savefig('result.png')
         print(num_action_act)
         #env.close()
-            
+
+def testing(): 
+    gamma = 0.99
+    batch_sz = 32 
+    num_episodes = 1000 
+    total_t = 0
+    episode_rewards = np.zeros(num_episodes)
+    last_100_avgs = []
+    full_msg='' 
+
+    model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
+
+    with tf.Session() as sess:
+        model.set_session(sess)
+        sess.run(tf.global_variables_initializer())
+        model.load()
+
+        obs = env.reset()
+        state = obs
+        
+        for i in range(MIN_EXPERIENCES):
+            action = model.sample_action(state, 0.1)
+            obs, reward, done, _, full_msg= env.step(action,full_msg)
+            #time.sleep(0.5)
+            #print(obs)
+            if done == 1:
+                done = True
+            else: 
+                done = False
+            next_state = obs
+
+            if done:
+                obs = env.reset()
+                state = obs
+            else:
+                state = next_state
 
 
 
+
+if __name__ == "__main__":
+    number_enemy = int(sys.argv[1])
+    env = env(c, number_enemy)
+    if sys.argv[2] == "train":
+        print("train")
+        trainning()
+    elif sys.argv[2]=="test":
+        print("test")
+        testing()
