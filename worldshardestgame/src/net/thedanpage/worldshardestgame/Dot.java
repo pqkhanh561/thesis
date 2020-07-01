@@ -81,6 +81,10 @@ public class Dot {
 		this.moveToPos1 = moveToPos1;
 		this.vertMovement = vertMovement;
 	}
+
+	public boolean getMoveToPos1(){
+		return(moveToPos1);
+	}
 	
 	
 	public void reset(){

@@ -132,7 +132,13 @@ public class Game extends JPanel implements ActionListener {
 	private String state_string(Player player, GameLevel level){
 		String t  = Double.toString(player.getX()) + "," + Double.toString(player.getY()) + ","; 
 		for (Dot ob: level.dots){
-			String tmp  = Double.toString(ob.getX()) + "," + Double.toString(ob.getY())+ ",";
+			String tmp;
+			if (ob.getMoveToPos1()){
+				tmp  = Double.toString(-ob.getX()) + "," + Double.toString(ob.getY())+ ",";
+			}
+			else {
+				tmp  = Double.toString(ob.getX()) + "," + Double.toString(ob.getY())+ ",";
+			}
 			t = t + tmp;
 		}
 
