@@ -58,10 +58,9 @@ class DQN:
             self.G = tf.placeholder(tf.float32, shape=(None,), name='G')
             self.actions = tf.placeholder(tf.int32, shape=(None,), name='actions')
 
-            self.fc1 = tf.contrib.layers.fully_connected(self.X, 12, activation_fn=tf.nn.relu, weights_initializer=tf.contrib.layers.xavier_initializer())
-            self.fc2 = tf.contrib.layers.fully_connected(self.fc1, 8, activation_fn=tf.nn.relu, weights_initializer=tf.contrib.layers.xavier_initializer())
+            fc1 = tf.contrib.layers.fully_connected(self.X, 256, activation_fn=tf.nn.relu)
 
-            self.predict_op = tf.contrib.layers.fully_connected(self.fc2, K)
+            self.predict_op = tf.contrib.layers.fully_connected(fc1, K)
 
             selected_action_values = tf.reduce_sum(self.predict_op * tf.one_hot(self.actions, K), reduction_indices=[1])
 
@@ -91,13 +90,13 @@ class DQN:
         if np.random.random() < eps:
             return np.random.choice(self.K)
         else:
+            return np.argmax(self.predict([x])[0])
             print(x) 
             print(self.session.run(self.fc1, feed_dict={self.X:[x]}))
             print(self.session.run(self.fc2, feed_dict={self.X:[x]}))
             print(self.session.run(self.predict_op, feed_dict={self.X:[x]}))
             print("")
             print("")
-            return np.argmax(self.predict([x])[0])
 
     def load(self):
         self.saver = tf.train.Saver(tf.global_variables())
@@ -138,7 +137,7 @@ def trainning():
     num_action_act = [0,0,0,0,0]
     gamma = 0.99
     batch_sz = 32 
-    num_episodes = 1000 
+    num_episodes = 100000 
     total_t = 0
     experience_replay_buffer = []
     episode_rewards = np.zeros(num_episodes)
@@ -149,7 +148,7 @@ def trainning():
 
     epsilon = 1.0
     epsilon_min = 0.1
-    epsilon_change = (epsilon - epsilon_min) / 50000#500000
+    epsilon_change = (epsilon - epsilon_min) / 500000#500000
 
     model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
     target_model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="target_model")
@@ -169,7 +168,7 @@ def trainning():
             num_action_act[action] +=1
             obs, reward, done, _, full_msg= env.step(action,full_msg)
             #time.sleep(0.5)
-            #print(obs)
+            print(obs)
             if done == 1:
                 done = True
             else: 
@@ -293,7 +292,7 @@ def testing():
         for i in range(MIN_EXPERIENCES):
             action = model.sample_action(state, 0.1)
             obs, reward, done, _, full_msg= env.step(action,full_msg)
-            #time.sleep(0.5)
+            time.sleep(0.5)
             #print(obs)
             if done == 1:
                 done = True
