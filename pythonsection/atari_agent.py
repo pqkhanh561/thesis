@@ -162,13 +162,13 @@ def trainning():
         print("Filling experience replay buffer...")
         obs = env.reset()
         state = obs
-        for i in range(MIN_EXPERIENCES):
         #for i in range(MIN_EXPERIENCES):
+        for i in tqdm(range(MIN_EXPERIENCES)):
             action = np.random.randint(0,K)
             num_action_act[action] +=1
             obs, reward, done, _, full_msg= env.step(action,full_msg)
             #time.sleep(0.5)
-            print(obs)
+            #print(obs)
             if done == 1:
                 done = True
             else: 
