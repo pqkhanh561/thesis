@@ -67,6 +67,8 @@ class env():
                         self.dead=1
                 if tile==1:
                         self.reward-=0
+                        self.reward-=15*40-self.state[0]
+
                 elif tile==2:
                         self.reward-=0
 

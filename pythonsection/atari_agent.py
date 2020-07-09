@@ -168,7 +168,7 @@ def trainning():
             num_action_act[action] +=1
             obs, reward, done, _, full_msg= env.step(action,full_msg)
             #time.sleep(0.5)
-            #print(obs)
+            print(obs)
             if done == 1:
                 done = True
             else: 
