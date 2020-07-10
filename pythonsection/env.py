@@ -67,7 +67,7 @@ class env():
                         self.dead=1
                 if tile==1:
                         self.reward-=0
-                        self.reward+=(11-(15-self.state[0]/40))
+                        self.reward+=(11-(15-self.state[0]/40))/11
 
                 elif tile==2:
                         self.reward-=0

@@ -14,7 +14,7 @@ MIN_EXPERIENCES = 50000
 TARGET_UPDATE_PERIOD = 10000
 K = 5
 MAX_STEP=100
-np.random.seed(12345);
+np.random.seed(1);
 
 #Sever setup
 import socket   
@@ -137,7 +137,7 @@ def trainning():
     num_action_act = [0,0,0,0,0]
     gamma = 0.99
     batch_sz = 32 
-    num_episodes = 100000 
+    num_episodes = 1000000
     total_t = 0
     experience_replay_buffer = []
     episode_rewards = np.zeros(num_episodes)
@@ -148,7 +148,7 @@ def trainning():
 
     epsilon = 1.0
     epsilon_min = 0.1
-    epsilon_change = (epsilon - epsilon_min) / 500000#500000
+    epsilon_change = (epsilon - epsilon_min) / 1000000#500000
 
     model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
     target_model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="target_model")
@@ -261,6 +261,8 @@ def trainning():
             if i % 50 ==0:
                 model.save(i)
             sys.stdout.flush()
+            if np.sum(num_action_act) > 5e6:
+                break
 
         plt.plot(last_100_avgs)
         plt.xlabel('episodes')
@@ -289,11 +291,11 @@ def testing():
         obs = env.reset()
         state = obs
         
-        for i in range(MIN_EXPERIENCES):
-            action = model.sample_action(state, 0.1)
+        for i in tqdm(range(MIN_EXPERIENCES)):
+            action = model.sample_action(state, 0.01)
             obs, reward, done, _, full_msg= env.step(action,full_msg)
-            time.sleep(0.5)
-            #print(obs)
+            #time.sleep(0.5)
+            print(action)
             if done == 1:
                 done = True
             else: 
