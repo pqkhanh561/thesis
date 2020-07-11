@@ -290,12 +290,12 @@ def testing():
 
         obs = env.reset()
         state = obs
-        
-        for i in tqdm(range(MIN_EXPERIENCES)):
-            action = model.sample_action(state, 0.01)
+        acc = [1,2,2,2,2,2,2,0,2,2,2,2,2,2,2] 
+        for i in tqdm(range(int(10e6))):
+            action = np.random.choice(K)  
             obs, reward, done, _, full_msg= env.step(action,full_msg)
-            #time.sleep(0.5)
-            print(action)
+            #time.sleep(0.8)
+            #print(action)
             if done == 1:
                 done = True
             else: 
