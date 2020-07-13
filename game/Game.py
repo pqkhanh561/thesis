@@ -122,8 +122,13 @@ class WorldHardestGame:
         self.player.move_step()
         if self.render:
             self.player.draw(self.screen)
-
+        
+        #print(self.player)
+        #for i in range(4):
+        #    print('Dot {}: {}'.format(i,self.dots[i]))
+        #print("")
         if self.player.checkCollapseDots(self.player.x, self.player.y, self.dots):
+            self.player.dead = True
             self.can_move=False 
 
         if self.player.checkWin():
@@ -159,6 +164,7 @@ class WorldHardestGame:
             self.player.action = action 
             #if self.player.win:
             #    time.sleep(1)
+            #    print("WIN")
             res = self.getGameState()
             if self.player.dead:
                 self.reset()
@@ -170,5 +176,7 @@ class WorldHardestGame:
 if __name__ == '__main__':
     game = WorldHardestGame()
     acc = [1,3,3,3,3,3,3,0,3,3,3,3,3,3,3]
-    for i in range(5000000):
-       print(game.run('right')) 
+    for i in tqdm(range(5000000)):
+        action = np.random.choice(4)
+       #print(game.run(action_arr[acc[i%len(acc)]])) 
+        game.run(action_arr[action])

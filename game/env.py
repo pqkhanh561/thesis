@@ -43,14 +43,14 @@ class env():
                 tile = float(list_feature[12])
                
                 #REWARD for env
-                if self.dead==1:
-                        self.reward-=3
+                if self.dead==1 and self.win!=1:
+                        self.reward-=50
                 if self.win==1:
-                        self.reward+=100
+                        self.reward+=200
                         self.dead=1
                 if tile==1:
                         self.reward-=0
-                        #self.reward+=(11-(15-self.state[0]))
+                        self.reward+=(11-(15-self.state[0]))
 
                 elif tile==2:
                         self.reward-=0

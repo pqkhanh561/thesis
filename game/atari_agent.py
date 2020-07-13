@@ -46,9 +46,11 @@ class DQN:
             self.G = tf.placeholder(tf.float32, shape=(None,), name='G')
             self.actions = tf.placeholder(tf.int32, shape=(None,), name='actions')
 
-            fc1 = tf.contrib.layers.fully_connected(self.X, 256, activation_fn=tf.nn.relu)
 
-            self.predict_op = tf.contrib.layers.fully_connected(fc1, K)
+            fc1 = tf.contrib.layers.fully_connected(self.X, 64, activation_fn=tf.nn.relu)
+            fc2 = tf.contrib.layers.fully_connected(fc1, 32, activation_fn=tf.nn.relu)
+
+            self.predict_op = tf.contrib.layers.fully_connected(fc2, K)
 
             selected_action_values = tf.reduce_sum(self.predict_op * tf.one_hot(self.actions, K), reduction_indices=[1])
 
@@ -279,13 +281,18 @@ def testing():
         obs = env.reset()
         state = obs
         acc = [1,2,2,2,2,2,2,0,2,2,2,2,2,2,2] 
-        for i in tqdm(range(int(10e6))):
-            action = np.random.choice(K)  
+        for i in range(int(10e6)):
+            if i % 4 == 0:
+                action = model.sample_action(state, 0.1)
+            else:
+                action = model.sample_action(state, 0.1)
+            #action = acc[i%len(acc)]
             obs, reward, done, _ = env.step(action)
             #time.sleep(0.8)
             #print(action)
             if done == 1:
                 done = True
+                print("Ep {} reward: {}".format(i,reward))
             else: 
                 done = False
             next_state = obs
