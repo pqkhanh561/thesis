@@ -36,7 +36,13 @@ class env():
                 #Simple state
                 #for i in range(2,10):
                 #    self.state[i] = int(self.state[i])
-               
+
+                #for i in range(2,10):
+                #    if i%2 == 0:
+                #        self.state[i] = self.state[0] - self.state[i]
+                #    else:
+                #        self.state[i] = self.state[1] - self.state[i]
+
 
                 self.dead = float(list_feature[10])
                 self.win = float(list_feature[11])

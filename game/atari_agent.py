@@ -47,10 +47,10 @@ class DQN:
             self.actions = tf.placeholder(tf.int32, shape=(None,), name='actions')
 
 
-            fc1 = tf.contrib.layers.fully_connected(self.X, 64, activation_fn=tf.nn.relu)
-            fc2 = tf.contrib.layers.fully_connected(fc1, 32, activation_fn=tf.nn.relu)
+            fc1 = tf.contrib.layers.fully_connected(self.X, 128, activation_fn=tf.nn.relu)
+            #fc2 = tf.contrib.layers.fully_connected(fc1, 32, activation_fn=tf.nn.relu)
 
-            self.predict_op = tf.contrib.layers.fully_connected(fc2, K)
+            self.predict_op = tf.contrib.layers.fully_connected(fc1, K)
 
             selected_action_values = tf.reduce_sum(self.predict_op * tf.one_hot(self.actions, K), reduction_indices=[1])
 
