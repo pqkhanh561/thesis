@@ -9,7 +9,7 @@ game = WorldHardestGame()
 
 class env():
         def __init__(self, number_enemy):
-                self.state = None #Include position of agen and position of enemy
+                self.state = None#Include position of agen and position of enemy
                 self.reward = 0
                 self.dead = 0   #1: is dead
                 self.win = 0
@@ -22,16 +22,15 @@ class env():
                 self.state = None
                 #Require: action text need have length 5
                 
-                full_msg = game.run(ACTION_DICT[action])
+                list_feature = game.run(ACTION_DICT[action])
                
                 #msg is contain all feature
                 #2 is position of agent
                 #8 next is position of enemy
                 #1 next is agent dead
                 #1 next is is win 
-                # type of tile that agent is standing
-                list_feature = full_msg
-                self.state = [float(i) for i in list_feature[0:(2*self.num_enemy+1)+1]]
+                # type of tile that agent is standing 
+                self.state = [float(i) for i in list_feature[0:(3*self.num_enemy+1)+1]]
 
                 #Simple state
                 #for i in range(2,10):
@@ -44,15 +43,18 @@ class env():
                 #        self.state[i] = self.state[1] - self.state[i]
 
 
-                self.dead = float(list_feature[10])
-                self.win = float(list_feature[11])
-                tile = float(list_feature[12])
+                self.dead = float(list_feature[14])
+                self.win = float(list_feature[15])
+                tile = float(list_feature[16])
                
                 #REWARD for env
+                self.state.append(15-self.state[0])
+                self.state.append(self.dead)
+
                 if self.dead==1 and self.win!=1:
-                        self.reward-=50
+                        self.reward-=15
                 if self.win==1:
-                        self.reward+=200
+                        self.reward+=100
                         self.dead=1
                 if tile==1:
                         self.reward-=0
@@ -73,4 +75,5 @@ if __name__=="__main__":
         e= env(4)
         e.reset()
         while(True):
-                e.step(np.random.randint(4));
+                e.step(np.random.randint(4))
+                print(len(e.state))

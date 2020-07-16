@@ -147,6 +147,7 @@ class WorldHardestGame:
         for dot in self.dots:
             state.append(dot.x)
             state.append(dot.y)
+            state.append(dot.vertMovement)
         state.append(int(self.player.dead))
         state.append(int(self.player.win))
         state.append(self.player.getTile())
