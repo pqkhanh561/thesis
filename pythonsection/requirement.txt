@@ -12,7 +12,6 @@ Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.0
 kiwisolver==1.1.0
 Markdown==3.2.1
-matplotlib==3.2.1
 numpy==1.16.4
 opencv-python==4.2.0.32
 Pillow==7.0.0
@@ -23,8 +22,7 @@ python-dateutil==2.8.1
 PyYAML==5.3.1
 scipy==1.4.1
 six==1.14.0
-#tensorflow==1.4.1
-#tensorflow-tensorboard==0.4.0
+tensorflow==1.4.1
 tqdm==4.43.0
 Werkzeug==1.0.0
 

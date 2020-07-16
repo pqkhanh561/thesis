@@ -4,24 +4,23 @@ import random
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
 from datetime import datetime
 from tqdm import tqdm
 from env import env
-import sys
+import pandas as pd
 
 MAX_EXPERIENCES = 1000000 #500000
 MIN_EXPERIENCES = 50000
 TARGET_UPDATE_PERIOD = 10000
 K = 5
 MAX_STEP=100
-np.random.seed(1);
+NUM_FRAME = 5e6
+
+np.random.seed(1)
 
 import time     
 global env 
-
-def update_state(state, obs):
-    obs_small = preprocess(obs)
-    return np.append(state[1:], np.expand_dims(obs_small, 0), axis=0)
 
 def learn(model, targets_model, experience_replay_buffer, gamma, batch_size):
     samples = random.sample(experience_replay_buffer, batch_size)
@@ -122,7 +121,7 @@ class DQN:
         
         self.session.run(ops)
 
-#if __name__ == '__main__':
+
 def trainning():
     num_action_act = [0,0,0,0,0]
     gamma = 0.99
@@ -130,9 +129,9 @@ def trainning():
     num_episodes = 1000000
     total_t = 0
     experience_replay_buffer = []
-    episode_rewards = np.zeros(num_episodes)
+    episode_rewards = []
     last_100_avgs = []
-    full_msg='' 
+    max_eps = [-sys.maxsize]
 
 
 
@@ -150,117 +149,115 @@ def trainning():
         model.load()
 
         print("Filling experience replay buffer...")
-        obs = env.reset()
-        state = obs
+        sate = env.reset()
+
         #for i in range(MIN_EXPERIENCES):
         for i in tqdm(range(MIN_EXPERIENCES)):
             action = np.random.randint(0,K)
             num_action_act[action] +=1
-            obs, reward, done, _ = env.step(action)
+            state, reward, done, _ = env.step(action)
+
+            done = done == 1
             #time.sleep(0.5)
             #print(obs)
-            if done == 1:
-                done = True
-            else: 
-                done = False
-            next_state = obs
+
+            next_state = state
             experience_replay_buffer.append((state, action, reward, next_state, done))
 
             if done:
-                obs = env.reset()
-                state = obs
+                state = env.reset()
             else:
                 state = next_state
 
         print(num_action_act)
-
-        for i in range(num_episodes):
-            t0 = datetime.now()
-            
-            obs = env.reset()
-            state = obs
-            loss = None
-
-
-            total_time_training = 0
-            num_steps_in_episode = 0
-            episode_reward = 0
-
-            done = False
+        try:
+            i = -1
+            #for i in range(num_episodes):
             while True:
-            #for _ in range(0, MAX_STEP):
-                if total_t % TARGET_UPDATE_PERIOD == 0:
-                    target_model.copy_from(model)
-                    print("Copied model parameters to target network, total_t = %s, period = %s" % (total_t, TARGET_UPDATE_PERIOD))
+                i+=1
+                t0 = datetime.now()
                 
-                action = model.sample_action(state, epsilon)
-                num_action_act[action] +=1
-                time_act = datetime.now()
-                obs, reward, done, _  = env.step(action)
-                time_act = datetime.now() - time_act
-                if done == 1:
-                    done = True
-                else: 
-                    done = False
+                state = env.reset()
+    
+                loss = None
 
-                next_state = obs 
 
-                episode_reward += reward
+                total_time_training = 0
+                num_steps_in_episode = 0
+                episode_reward = 0
 
-                if len(experience_replay_buffer)==MAX_EXPERIENCES:
-                    experience_replay_buffer.pop(0)
-                experience_replay_buffer.append((state, action, reward, next_state, done))
+                done = False
+                while True:
+                    if total_t % TARGET_UPDATE_PERIOD == 0:
+                        target_model.copy_from(model)
+                        print("Copied model parameters to target network, total_t = %s, period = %s" % (total_t, TARGET_UPDATE_PERIOD))
+                    
+                    action = model.sample_action(state, epsilon)
+                    num_action_act[action] +=1
+                    time_act = datetime.now()
+                    next_state, reward, done, _  = env.step(action)
+                    time_act = datetime.now() - time_act
 
-                t0_2 = datetime.now()
-                loss = learn(model, target_model, experience_replay_buffer, gamma, batch_sz)
-                dt = datetime.now() - t0_2
+                    done = done==1
 
-                #Confirm 
-                '''
-                if time_act > dt:
-                    print("Java timeout")
-                else:
-                    print("Python timeout")
-                '''
-                total_time_training += dt.total_seconds()
-                num_steps_in_episode +=1
+                    episode_reward += reward
+
+                    if len(experience_replay_buffer)==MAX_EXPERIENCES:
+                        experience_replay_buffer.pop(0)
+                    experience_replay_buffer.append((state, action, reward, next_state, done))
+
+                    t0_2 = datetime.now()
+                    loss = learn(model, target_model, experience_replay_buffer, gamma, batch_sz)
+                    dt = datetime.now() - t0_2
+
                 
-                state = next_state
-                total_t += 1
+                    total_time_training += dt.total_seconds()
+                    num_steps_in_episode +=1
+                    
+                    state = next_state
+                    total_t += 1
 
-                epsilon = max(epsilon - epsilon_change, epsilon_min)
-                if done:
+                    epsilon = max(epsilon - epsilon_change, epsilon_min)
+                    if done:
+                        break
+
+                duration = datetime.now() - t0
+
+                episode_rewards.append(episode_reward)      #Reward every eps
+
+                max_eps.append(max(max_eps[-1], episode_reward)) #Max eps
+
+                time_per_step = total_time_training/num_steps_in_episode
+
+                last_100_avg = np.array(episode_rewards[max(0, i-100):i]).mean()
+                last_100_avgs.append(last_100_avg)          #Avg reward every eps
+
+                
+                print("Episode: {:>6}, Num steps: {:>3}, Reward: {:>5}, Avg reward: {:>5.3f}, Max: {:>5.3f} Eps: {:>5.3f}".format(i, num_steps_in_episode, episode_reward, last_100_avg, max_eps[-1], epsilon))
+                if i % 50 ==0:
+                    model.save(i)
+                sys.stdout.flush()
+                if np.sum(num_action_act) > NUM_FRAME:
                     break
+        except:
+            print("Break")
+        finally:
+            max_eps.pop(0)
+            data = pd.DataFrame({'Reward': episode_rewards, 'Avg Reward': last_100_avgs, 'Max': max_eps})
+            data.to_csv("./data_result.csv")
 
-            duration = datetime.now() - t0
+            figure(num=None, figsize=(15, 8), dpi=80, facecolor='w', edgecolor='k')
 
-            episode_rewards[i] = episode_reward
-            time_per_step = total_time_training/num_steps_in_episode
+            plt.plot('Reward', '--', color="#999999", data = data, label="Reward")
+            plt.plot('Avg Reward', data = data, label="Avg Reward")
+            plt.plot('Max', data = data, label="Max")
+            plt.legend(loc="upper left")
 
-            last_100_avg = episode_rewards[max(0, i-100):i].mean()
-            last_100_avgs.append(last_100_avg)
-            #print(i)
-            #print("last 100: ",last_100_avg)
-            #print("reward ",episode_reward)
-            #print("rewards ",episode_rewards)
-            #print("")
-            print("Episode:", i,"Duration:", duration, "Num steps:", num_steps_in_episode,
-                    "Reward:", episode_reward, "Training time per step:","%.3f" % time_per_step,
-                    "Avg Reward (last 100):", "%.3f" % last_100_avg, "Epsilon:", "%.3f" % epsilon)
-
-            if i % 50 ==0:
-                model.save(i)
-            sys.stdout.flush()
-            if np.sum(num_action_act) > 5e6:
-                break
-
-        plt.plot(last_100_avgs)
-        plt.xlabel('episodes')
-        plt.ylabel('Average Rewards')
-#        plt.show()
-        plt.savefig('result.png')
-        print(num_action_act)
-        #env.close()
+            plt.xlabel('episodes')
+            #plt.show()
+            plt.savefig('result.png')
+            print(num_action_act)
+            #env.close()
 
 def testing(): 
     gamma = 0.99
@@ -269,7 +266,6 @@ def testing():
     total_t = 0
     episode_rewards = np.zeros(num_episodes)
     last_100_avgs = []
-    full_msg='' 
 
     model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
 
@@ -278,8 +274,8 @@ def testing():
         sess.run(tf.global_variables_initializer())
         model.load()
 
-        obs = env.reset()
-        state = obs
+        state = env.reset()
+        
         acc = [1,2,2,2,2,2,2,0,2,2,2,2,2,2,2] 
         for i in range(int(10e6)):
             if i % 4 == 0:
@@ -287,18 +283,14 @@ def testing():
             else:
                 action = model.sample_action(state, 0.1)
             #action = acc[i%len(acc)]
-            obs, reward, done, _ = env.step(action)
+            next_state, reward, done, _ = env.step(action)
             #time.sleep(0.8)
             #print(action)
-            if done == 1:
-                done = True
-                print("Ep {} reward: {}".format(i,reward))
-            else: 
-                done = False
-            next_state = obs
+            done = done == 1
 
             if done:
                 obs = env.reset()
+                print("Reward: {}".format(i,reward))
                 state = obs
             else:
                 state = next_state
