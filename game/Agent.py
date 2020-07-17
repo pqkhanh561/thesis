@@ -11,7 +11,7 @@ from env import env
 import pandas as pd
 
 MAX_EXPERIENCES = 1000000 #500000
-MIN_EXPERIENCES = 50
+MIN_EXPERIENCES = 50000
 TARGET_UPDATE_PERIOD = 10000
 K = 5
 MAX_STEP=100
@@ -170,94 +170,94 @@ def trainning():
                 state = next_state
 
         print(num_action_act)
-        #try:
-        i = -1
-        #for i in range(num_episodes):
-        while True:
-            i+=1
-            t0 = datetime.now()
-            
-            state = env.reset()
-
-            loss = None
-
-
-            total_time_training = 0
-            num_steps_in_episode = 0
-            episode_reward = 0
-
-            done = False
+        try:
+            i = -1
+            #for i in range(num_episodes):
             while True:
-                if total_t % TARGET_UPDATE_PERIOD == 0:
-                    target_model.copy_from(model)
-                    print("Copied model parameters to target network, total_t = %s, period = %s" % (total_t, TARGET_UPDATE_PERIOD))
+                i+=1
+                t0 = datetime.now()
                 
-                action = model.sample_action(state, epsilon)
-                num_action_act[action] +=1
-                time_act = datetime.now()
-                next_state, reward, done, _  = env.step(action)
-                time_act = datetime.now() - time_act
+                state = env.reset()
 
-                done = done==1
+                loss = None
 
-                episode_reward += reward
 
-                if len(experience_replay_buffer)==MAX_EXPERIENCES:
-                    experience_replay_buffer.pop(0)
-                experience_replay_buffer.append((state, action, reward, next_state, done))
+                total_time_training = 0
+                num_steps_in_episode = 0
+                episode_reward = 0
 
-                t0_2 = datetime.now()
-                loss = learn(model, target_model, experience_replay_buffer, gamma, batch_sz)
-                dt = datetime.now() - t0_2
+                done = False
+                while True:
+                    if total_t % TARGET_UPDATE_PERIOD == 0:
+                        target_model.copy_from(model)
+                        print("Copied model parameters to target network, total_t = %s, period = %s" % (total_t, TARGET_UPDATE_PERIOD))
+                    
+                    action = model.sample_action(state, epsilon)
+                    num_action_act[action] +=1
+                    time_act = datetime.now()
+                    next_state, reward, done, _  = env.step(action)
+                    time_act = datetime.now() - time_act
 
-            
-                total_time_training += dt.total_seconds()
-                num_steps_in_episode +=1
+                    done = done==1
+
+                    episode_reward += reward
+
+                    if len(experience_replay_buffer)==MAX_EXPERIENCES:
+                        experience_replay_buffer.pop(0)
+                    experience_replay_buffer.append((state, action, reward, next_state, done))
+
+                    t0_2 = datetime.now()
+                    loss = learn(model, target_model, experience_replay_buffer, gamma, batch_sz)
+                    dt = datetime.now() - t0_2
+
                 
-                state = next_state
-                total_t += 1
+                    total_time_training += dt.total_seconds()
+                    num_steps_in_episode +=1
+                    
+                    state = next_state
+                    total_t += 1
 
-                epsilon = max(epsilon - epsilon_change, epsilon_min)
-                if done:
+                    epsilon = max(epsilon - epsilon_change, epsilon_min)
+                    if done:
+                        break
+
+                duration = datetime.now() - t0
+
+                episode_rewards.append(episode_reward)      #Reward every eps
+
+                max_eps.append(max(max_eps[-1], episode_reward)) #Max eps
+
+                time_per_step = total_time_training/num_steps_in_episode
+
+                last_100_avg = np.array(episode_rewards[max(0, i-100):i]).mean()
+                last_100_avgs.append(last_100_avg)          #Avg reward every eps
+
+                
+                print("Episode: {:>6}, Num steps: {:>3}, Reward: {:>8.3f}, Avg reward: {:>5.3f}, Max: {:>5.3f} Eps: {:>5.3f}".format(i, num_steps_in_episode, episode_reward, last_100_avg, max_eps[-1], epsilon))
+                #if i % 50 ==0:
+                #    model.save(i)
+                sys.stdout.flush()
+                if np.sum(num_action_act) > NUM_FRAME:
                     break
+        except:
+            print("Break")
+        finally:
+            max_eps.pop(0)
+            data = pd.DataFrame({'Reward': episode_rewards, 'Avg Reward': last_100_avgs, 'Max': max_eps})
+            data.to_csv("./data_result.csv")
 
-            duration = datetime.now() - t0
+            figure(num=None, figsize=(15, 8), dpi=80, facecolor='w', edgecolor='k')
 
-            episode_rewards.append(episode_reward)      #Reward every eps
+            plt.plot('Reward', '--', color="#999999", data = data, label="Reward")
+            plt.plot('Avg Reward', data = data, label="Avg Reward")
+            plt.plot('Max', data = data, label="Max")
+            plt.legend(loc="upper left")
 
-            max_eps.append(max(max_eps[-1], episode_reward)) #Max eps
-
-            time_per_step = total_time_training/num_steps_in_episode
-
-            last_100_avg = np.array(episode_rewards[max(0, i-100):i]).mean()
-            last_100_avgs.append(last_100_avg)          #Avg reward every eps
-
-            
-            print("Episode: {:>6}, Num steps: {:>3}, Reward: {:>5}, Avg reward: {:>5.3f}, Max: {:>5.3f} Eps: {:>5.3f}".format(i, num_steps_in_episode, episode_reward, last_100_avg, max_eps[-1], epsilon))
-            if i % 50 ==0:
-                model.save(i)
-            sys.stdout.flush()
-            if np.sum(num_action_act) > NUM_FRAME:
-                break
-        #except:
-        #    print("Break")
-        #finally:
-        #    max_eps.pop(0)
-        #    data = pd.DataFrame({'Reward': episode_rewards, 'Avg Reward': last_100_avgs, 'Max': max_eps})
-        #    data.to_csv("./data_result.csv")
-
-        #    figure(num=None, figsize=(15, 8), dpi=80, facecolor='w', edgecolor='k')
-
-        #    plt.plot('Reward', '--', color="#999999", data = data, label="Reward")
-        #    plt.plot('Avg Reward', data = data, label="Avg Reward")
-        #    plt.plot('Max', data = data, label="Max")
-        #    plt.legend(loc="upper left")
-
-        #    plt.xlabel('episodes')
-        #    #plt.show()
-        #    plt.savefig('result.png')
-        #    print(num_action_act)
-        #    #env.close()
+            plt.xlabel('episodes')
+            #plt.show()
+            plt.savefig('result.png')
+            print(num_action_act)
+            #env.close()
 
 def testing(): 
     gamma = 0.99

@@ -58,7 +58,7 @@ class env():
                         self.dead=1
                 if tile==1:
                         self.reward-=0
-                        self.reward+=(11-(15-self.state[0]))
+                        self.reward+=np.power((11-(15-self.state[0])),0.4)
 
                 elif tile==2:
                         self.reward-=0
