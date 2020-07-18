@@ -1,6 +1,8 @@
-
+import numpy as np
 from Point import Point 
 import pygame
+
+np.random.seed(1)
 
 class Dot:
     def __init__(self, x, y, pos1, pos2, speed,  moveToPos1, vertMovement):
@@ -17,9 +19,15 @@ class Dot:
     def __str__(self):
         return("Dot position: {} , {}".format(self.x, self.y))
 
-    def reset(self):
-        self.x = self.x_init
-        self.y = self.y_init
+    def reset(self, init_pos=False):
+        if not init_pos:
+            self.x = self.x_init
+            self.y = self.y_init
+        else:
+            #TODO: due with vertical
+            self.x = np.random.choice(a=range(self.pos1.x, self.pos2.x))
+            self.y = self.y_init 
+            self.moveToPos1 = np.random.choice([True, False])
 
     def update(self):
         if self.moveToPos1:
@@ -58,6 +66,11 @@ class Dot:
 
     def getY(self):
         return self.y
+
+    def copy(self, dot):
+        self.x = dot.x
+        self.moveToPos1 = dot.moveToPos1
+
     
 
     def draw(self, screen):

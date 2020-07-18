@@ -6,13 +6,13 @@ import pygame
 import time
 from tqdm import tqdm
 
-np.random.seed(2)
+np.random.seed(3)
 pygame.init()
 
 action_arr = ['up', 'down', 'left', 'right', 'stay']
 class WorldHardestGame:
 
-    def __init__(self, render=False):
+    def __init__(self, render=True):
         self.map = None
         self.player = None
         self.dots = []
@@ -72,11 +72,24 @@ class WorldHardestGame:
         tmp = tmp[1].replace('\n','').split(',')
         self.player = Player(int(tmp[0]), int(tmp[1]),arr.T)
 
-    def reset(self):
+    def reset(self, init_pos):
         self.player.dead = False
-        self.player.reset()
-        for dot in self.dots:
-            dot.reset()
+        if not init_pos:
+            self.player.reset()
+            for dot in self.dots:
+                dot.reset()
+        else:
+            self.dots[0].reset(init_pos)
+            self.dots[2].copy(self.dots[0])
+            self.dots[1].x = 9 - (self.dots[0].x - 10)
+            self.dots[1].moveToPos1 = not self.dots[0].moveToPos1
+            self.dots[3].copy(self.dots[1])
+            while True:
+                self.player.reset(init_pos)
+                for dot in self.dots:
+                    if dot.x == self.player.x and dot.y == self.player.y:
+                        continue
+                break
 
     def drawTile(self):
         self.screen.fill((0,0,0))
@@ -136,9 +149,7 @@ class WorldHardestGame:
             self.player.dead = True
             #print(self.num_win)
 
-        if self.render:
-            pygame.display.flip()
-    
+        if self.render: pygame.display.flip() 
     #def draw(self):
     #    pass
 
@@ -147,20 +158,19 @@ class WorldHardestGame:
         for dot in self.dots:
             state.append(dot.x)
             state.append(dot.y)
-            state.append(dot.vertMovement)
+            state.append(dot.moveToPos1)
         state.append(int(self.player.dead))
         state.append(int(self.player.win))
         state.append(self.player.getTile())
         return(state)
 
-    def run(self, action):
+    def run(self, action, init_pos=True):
         if action=='reset':
-            self.reset()
+            self.reset(init_pos)
             self.player.action = 'stay'
             self.update()
             return(self.getGameState())
         else:
-            self.update()
             #self.player.sample_move(self.dots)
             self.player.action = action 
             #if self.player.win:
@@ -168,7 +178,8 @@ class WorldHardestGame:
             #    print("WIN")
             res = self.getGameState()
             if self.player.dead:
-                self.reset()
+                self.reset(init_pos)
+            self.update()
             return(res)
 
 
@@ -177,7 +188,10 @@ class WorldHardestGame:
 if __name__ == '__main__':
     game = WorldHardestGame()
     acc = [1,3,3,3,3,3,3,0,3,3,3,3,3,3,3]
-    for i in tqdm(range(5000000)):
+    for i in range(5000000):
         action = np.random.choice(4)
        #print(game.run(action_arr[acc[i%len(acc)]])) 
-        game.run(action_arr[action])
+        if game.player.win:
+            time.sleep(1)
+            print("WIN")
+        print(game.run(action_arr[action]))

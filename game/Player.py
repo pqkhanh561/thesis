@@ -50,9 +50,13 @@ class Player:
         self.y = y
         return x_tmp, y_tmp
 
-    def reset(self):
-        self.x = self.x_init
-        self.y = self.y_init
+    def reset(self, init_pos=False):
+        if init_pos:
+            self.x = np.random.choice(range(4,14))
+            self.y = np.random.choice(range(5,8))
+        else:
+            self.x = self.x_init
+            self.y = self.y_init
         self.action = None
         self.dead = False
         self.win = False

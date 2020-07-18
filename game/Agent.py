@@ -11,13 +11,14 @@ from env import env
 import pandas as pd
 
 MAX_EXPERIENCES = 1000000 #500000
-MIN_EXPERIENCES = 50000
-TARGET_UPDATE_PERIOD = 10000
+MIN_EXPERIENCES = 50000 
+TARGET_UPDATE_PERIOD = 2000
 K = 5
 MAX_STEP=100
 NUM_FRAME = 5e6
+MAX_STEP=100
 
-np.random.seed(1)
+np.random.seed(3)
 
 import time     
 global env 
@@ -46,10 +47,10 @@ class DQN:
             self.actions = tf.placeholder(tf.int32, shape=(None,), name='actions')
 
 
-            fc1 = tf.contrib.layers.fully_connected(self.X, 128, activation_fn=tf.nn.relu)
-            #fc2 = tf.contrib.layers.fully_connected(fc1, 32, activation_fn=tf.nn.relu)
+            fc1 = tf.contrib.layers.fully_connected(self.X, 64, activation_fn=tf.nn.relu)
+            fc2 = tf.contrib.layers.fully_connected(fc1, 32, activation_fn=tf.nn.relu)
 
-            self.predict_op = tf.contrib.layers.fully_connected(fc1, K)
+            self.predict_op = tf.contrib.layers.fully_connected(fc2, K)
 
             selected_action_values = tf.reduce_sum(self.predict_op * tf.one_hot(self.actions, K), reduction_indices=[1])
 
@@ -136,7 +137,7 @@ def trainning():
 
 
     epsilon = 1.0
-    epsilon_min = 0.1
+    epsilon_min = 0.01
     epsilon_change = (epsilon - epsilon_min) / 1000000#500000
 
     model = DQN(K=K, input_shape=4 + 3*number_enemy, scope="model")
@@ -187,7 +188,8 @@ def trainning():
                 episode_reward = 0
 
                 done = False
-                while True:
+                for _ in range(MAX_STEP):
+                #while True:
                     if total_t % TARGET_UPDATE_PERIOD == 0:
                         target_model.copy_from(model)
                         print("Copied model parameters to target network, total_t = %s, period = %s" % (total_t, TARGET_UPDATE_PERIOD))
@@ -234,8 +236,8 @@ def trainning():
 
                 
                 print("Episode: {:>6}, Num steps: {:>3}, Reward: {:>8.3f}, Avg reward: {:>5.3f}, Max: {:>5.3f} Eps: {:>5.3f}".format(i, num_steps_in_episode, episode_reward, last_100_avg, max_eps[-1], epsilon))
-                #if i % 50 ==0:
-                #    model.save(i)
+                if i % 100 ==0:
+                    model.save(i)
                 sys.stdout.flush()
                 if np.sum(num_action_act) > NUM_FRAME:
                     break
@@ -267,7 +269,7 @@ def testing():
     episode_rewards = np.zeros(num_episodes)
     last_100_avgs = []
 
-    model = DQN(K=K, input_shape=2 + 2*number_enemy, scope="model")
+    model = DQN(K=K, input_shape=4 + 3*number_enemy, scope="model")
 
     with tf.Session() as sess:
         model.set_session(sess)
@@ -277,20 +279,23 @@ def testing():
         state = env.reset()
         
         acc = [1,2,2,2,2,2,2,0,2,2,2,2,2,2,2] 
+        sum_reward = 0
         for i in range(int(10e6)):
-            if i % 4 == 0:
-                action = model.sample_action(state, 0.1)
-            else:
-                action = model.sample_action(state, 0.1)
+            #if i % 4 == 0:
+            #    action = model.sample_action(state, 0.1)
+            #else:
+            action = model.sample_action(state, 0.1)
             #action = acc[i%len(acc)]
             next_state, reward, done, _ = env.step(action)
             #time.sleep(0.8)
             #print(action)
             done = done == 1
+            sum_reward += reward
 
             if done:
                 obs = env.reset()
-                print("Reward: {}".format(i,reward))
+                print("Reward: {}".format(sum_reward))
+                sum_reward = 0
                 state = obs
             else:
                 state = next_state
