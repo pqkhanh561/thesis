@@ -7,12 +7,11 @@ import time
 from tqdm import tqdm
 
 np.random.seed(3)
-pygame.init()
 
 action_arr = ['up', 'down', 'left', 'right', 'stay']
 class WorldHardestGame:
 
-    def __init__(self, render=True):
+    def __init__(self, render=False):
         self.map = None
         self.player = None
         self.dots = []
@@ -20,8 +19,12 @@ class WorldHardestGame:
         self.can_move=True
         self.render = render
         self.num_win = 0 
-        if self.render:
-            self.screen = pygame.display.set_mode((800, 600))
+        try:
+                pygame.init()
+                if self.render:
+                        self.screen = pygame.display.set_mode((800, 600))
+        except:
+                pass
 
 
     def readResource(self):

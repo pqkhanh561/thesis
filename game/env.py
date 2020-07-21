@@ -51,13 +51,13 @@ class env():
                 self.state.append(self.dead)
 
                 if self.dead==1 and self.win!=1:
-                        self.reward-=50
+                        self.reward-=100
                 if self.win==1:
                         self.reward+=100
                         self.dead=1
                 if tile==1:
                         self.reward-=0
-                        self.reward+=np.power((11-(15-self.state[0])),1)/11
+                        self.reward+=np.power((11-(15-self.state[0])),1)
 
                 elif tile==2:
                         self.reward-=0
