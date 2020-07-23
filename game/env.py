@@ -57,10 +57,10 @@ class env():
                         self.dead=1
                 if tile==1:
                         self.reward-=0
-                        self.reward+=np.power((11-(15-self.state[0])),1)
+                        self.reward+=(11-(15-self.state[0]))/11
 
                 elif tile==2:
-                        self.reward-=0
+                        self.reward-=2
                 
                 #print('State: {}, reward: {}, dead: {}'.format(self.state, self.reward, self.dead))
                 return self.state, self.reward, self.dead, 'live' 
