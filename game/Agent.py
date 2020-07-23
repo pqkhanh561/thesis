@@ -180,9 +180,7 @@ def trainning():
                     
                     action = model.sample_action(state, epsilon)
                     next_state, reward, done, _  = env.step(action)
-
                     done = done==1
-
                     episode_reward += reward
 
                     if len(experience_replay_buffer)==MAX_EXPERIENCES:
@@ -212,7 +210,7 @@ def trainning():
                 if i % 100 ==0:
                     model.save(i)
                 sys.stdout.flush()
-                if np.sum(num_action_act) > NUM_FRAME:
+                if total_t > NUM_FRAME:
                     break
         except:
             print("Break")
