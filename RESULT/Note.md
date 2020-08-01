@@ -12,7 +12,7 @@ Use Adam  'mae' metrics\
 
 **31-July**\
 **--------Model 1----------**
-Without random agent position
+Without random agent position\
 *Reward*: \
 +10 if win\
 -10 if lose\
@@ -25,7 +25,7 @@ Use Adam  'mae' metrics\
 <img src="31-July-model1-1.gif" width="240" height="240"/>
 
 
-With random agent position
+With random agent position\
 **Conlusion**: The agent can win a lot of games but there are a lot of times it die in ridiculous way. Why is this happened?\
 <img src="31-July-model1-2.gif" width="240" height="240"/>
 
