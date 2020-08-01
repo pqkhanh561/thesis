@@ -11,7 +11,7 @@ Use Adam  'mae' metrics\
 <img src="27-July.gif" width="240" height="240"/>
 
 **31-July**\
-**--------Model 1----------**
+**--------Model 1----------**\
 Without random agent position\
 *Reward*: \
 +10 if win\
