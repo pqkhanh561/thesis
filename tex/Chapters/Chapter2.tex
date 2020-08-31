@@ -1,0 +1,128 @@
+\section{Vấn đề của học tăng cường}
+Học tăng cường được miêu tả trong \cite{RLSuttonBook}, là tổng hợp các thuật toán giúp cho robot học được qua môi trường bằng phương pháp thử. Khác với những thuật toán máy học khác, robot không được biết trước hành động chính xác tiếp theo để thực hiện. Thay vào đó, robot phải tự khám phá môi trường và tối ưu hóa lượng phần thưởng tương lai có thể nhận, thường mục tiêu là tìm kiếm điểm đích và được thưởng một lượng lớn sau cùng.
+\subsection{Môi trường}
+\word{Môi trường}{Environment}được cấu tạo từ thế giới cho robot tương tác và học. Trong thực tế, môi trường có thể là điều khiển cánh tay robot, thăng bằng một thanh gậy, hình ảnh 2D và 3D trích xuất từ camera. Nó có thể bao gồm toàn bộ thế giới ảo, những bài đăng (twitter/ facebook) hay là máy chơi ảo (Atari, OpenAI Gym). Những môi trường từ đơn giản đến phức tạp xung quanh cuộc sống ta đều có thể là ứng cử viên cho robot để học. Để xác định một cách rõ ràng toàn bộ môi trường là điều rất khó, trong bài khóa luận này nhóm tác giả sẽ dùng một vector để thể hiện
+ \word{Trạng thái}{State}của môi trường. Một trạng thái trong môi trường được biểu diễn bởi không gian $N$ chiều chứa trạng thái của một môi trường $D$.
+\begin{align*}
+    s_t \in D,\quad\quad\quad s_t \in \mathbb{R}^N
+\end{align*}
+Trong đó $s_t$ là một trạng thái cụ thể tại thời điểm $t$ và $D$ bao gồm tất cả các trạng thái mà robot có thể gặp. Số chiều $N$ của $\mathbb{N}$ phụ thuộc vào vấn đề đang giải quyết. Một trạng thái phù hợp sẽ ảnh hưởng đến trực tiếp đến quá trình học của robot. Với mỗi vấn đề, có rất nhiều cách để biểu diễn trạng thái, việc xác định trạng thái có đặc trưng tốt sẽ giúp cho việc học của robot khả thi và tiết kiệm thời gian.
+\subsection{Phần thưởng/Đích}
+\word{Phần thưởng}{Reward}đóng vài trò chủ chốt trong việc quyết định học như thế nào của robot. Ví dụ với phần thưởng dương sẽ thúc đẩy robot làm việc đó nhiều hơn. Ngược lại, robot sẽ không thích làm những việc mà nó bị phạt bởi phần thưởng âm. Theo nghiên cứu của \cite{RLSuttonBook}, tối ưu tổng của các phần thưởng trong tương lai là mục tiêu của robot:\\
+\begin{equation}\label{returnbegin}
+    R_t = r_{t+1} + r_{t+2} + \dots +r_T\\
+\end{equation}
+Trong đó $R_t$ là tổng tích lũy các phần thưởng từ thời điểm cụ thể $t$ đến $T$ với $ T$ thường là thời điểm robot hết được tương tác với môi trường nữa. Tổng quát, trong những môi trường rời rạc, có thể viết lại công thức \ref{returnbegin} như sau:
+\begin{equation}\label{returnStochastic}
+    R_t = \sum^T_{k=0}r_{t+k+1}
+\end{equation}
+Tuy nhiên, không phải lúc nào các phần thưởng mà robot có thể nhận được trong tương lai với một trạng thái cụ thể là như nhau. Trong \cite{RLSuttonBook}, tham số $\gamma$ được biết là \word{Hệ số Chiết khấu}{Discount Factor} với vai trò khiến robot cân nhắc trước khi chọn một hành động bất kỳ. Ví dụ nếu $\gamma$ tiến gần đến không, robot sẽ xem xét các hành động gần trạng thái hiện tại nào giá trị nhất. Ngược lại, robot sẽ hoạt động một cách tham lam chọn những hành động mang lượng phần thưởng lớn. 
+%xem lại định nghĩa gamma
+\begin{equation}\label{finalReturn}
+    R_T = \sum^T_{k=0}\gamma^kr_{t+k+1}
+\end{equation}
+\section{Quá trình Quyết định Markov}\label{MDP}
+Để thực hiện việc ra quyết định, một hệ thống tổng hợp nhiều luật lệ có thể mô hình hóa thực tế dưới dạng toán học là điều cần thiết. Để đơn giản hóa, tính chất "không nhớ" trong thống kê được sử dụng bằng \textit{tính chất Markov}\cite{MarkovProperty}. Mở rộng của  \textit{chuỗi Markov}, việc thêm vào các hành động để cho ra những kết quả đầu ra khả thi và phần thưởng được xem là nhân tố giúp cho robot phân biệt được những trạng thái có giá trị quan trọng, chúng tôi nhắc lại định nghĩa của 
+\word{Quá trình Quyết định Markov}{Markov Decision Processes}(MDP)\cite{AIbook}. Xuyên suốt khóa luận, các môi trường được sử dụng sẽ xây dựng  dựa trên MDP.\\
+Một cấu trúc chuẩn của học tăng cường theo MDP, sẽ bao gồm:
+\begin{itemize}
+    \item \textbf{Một tập hợp hữu hạn trạng thái $D$}, sẽ bao gồm tất cả những biểu diễn của môi trường.
+    \item \textbf{Một tập hợp hữu hạn các hành động}, bao gồm tất cả hành động của robot tại một thời điểm bất kỳ.
+    \item \textbf{Một hàm phần thưởng} $r = \psi(s_t, a_t, s_{t+1})$, được xác định là phần thưởng khi robot thực hiện hành động $a_t$ từ trạng thái $s_t$, kết quả là $s_{t+1}$.
+    \item \textbf{Một mô hình chuyển tiếp} $T(s_t,a_t,s_{t+1}) = p(s_{t+1}|s_t,a_t)$, là xác xuất xảy ra trạng thái $s_{t+1}$ khi thực hiện hành động $a_t$ tại trạng thái $s_t$.
+\end{itemize}
+\section{Các hàm cải thiện hành vi}
+Về mặt toán học, hành vi của robot chưa được định nghĩa. Nhưng chúng ta luôn mong muốn robot sẽ dần dần đạt được nhiều phần thưởng qua mỗi \word{tập}{episode}, cách phản ứng này được xem là cách học tăng cường tức cứ thử nhiều lần cho đến khi học được. Vậy hành vi của robot trở thành một tiền đề đơn giản: "Hành động nào cần thực hiện tại mỗi trạng thái?"
+\subsection{Chính sách}
+Mỗi hành vi của robot được quyết định bởi \word{Chính sách}{Policy}, được định nghĩa là một ánh xạ xác định hành động thực hiện tại mỗi trạng thái. Một chính sách có thể xác định khi chắc chắn hành động được thực hiện với một trạng thái xác định, và có thể ngẫu nhiên khi hành động tại trạng thái có khả năng xảy ra. Do đó, một chính sách xác định có thể được biểu diễn như sau:
+\begin{equation}\label{deterpolicy}
+    \pi(s_t)=a_t\quad,\quad\quad s_t\subset D\quad a_t\subset A
+\end{equation}
+Nếu hành động là ngẫu nhiên thì chính sách có thể chuyển thành một phân phối xác suất của $a_t$ tại $s_t$ thì có thể biểu diễn như sau:
+\begin{equation}\label{stochastic_policy}
+\pi(a_t|s_t) = p_i\quad,\quad\quad s_t \subset D\quad a_t\subset A \quad 0\le p_i \le 1
+\end{equation}
+Về mặt lý thuyết, chính sách có được nhiều lượng phần thưởng nhất được xem là chính sách tối ưu, ký hiệu là $\pi^*$. Để đạt đến mức tối ưu cần áp dụng thuật toán kết hợp với một chiến thuật \word{Khám phá}{Exploration}cho đến khi hội tụ và một lượng đủ số tập cần học. 
+\subsection{Hàm Giá trị}
+Một \word{Hàm Giá trị}{Value Function} sẽ đánh giá độ hữu dụng của chính sách khi biết trước trạng thái. Theo \ref{finalReturn}:
+\begin{equation}\label{Value_function}
+    V:V^\pi \longleftarrow \mathbb{R}, \quad V^\pi(s)=\mathbb{E}_\pi\left[R_t|s_t=s\right]=\mathbb{E}_\pi\left[\sum^\infty_{i=0}\gamma^ir_{t+i+1}\Big|s_t=s\right]
+\end{equation}
+Hơn thế nữa, hàm giá trị có thể được ước lượng bằng phương pháp "thử", bởi vì giá trị kỳ vọng sẽ thu được từ kinh nghiệm của robot. Nhờ vào tính chất của quy hoạch động nên việc khai triển hàm giá trị hiển nhiên vì có thể tính hàm bằng phương pháp đệ quy. Theo \ref{Value_function}:
+\begin{align}
+    \nonumber
+    V^\pi(s) = \mathbb{E}_\pi[R_t|s_t=s] &= \mathbb{E}_\pi\left[\sum^{\infty}_{i=0}\gamma^ir_{t+i+1}\Big|s_t=s\right]\\
+    &=\mathbb{E}_\pi\left[r_{t+1}+\gamma\sum^{\infty}_{i=0}\gamma^i + r_{t+i+2}\Big|s_t=s\right]\label{unfoldValueFunction}
+\end{align}
+Nếu chính sách chúng ta đang xét là ngẫu nhiên thì biểu thức \ref{unfoldValueFunction} có thể được khai triển thành \textit{biểu thức Bellman} của $V^\pi$\cite{RLSuttonBook}:
+\begin{equation}
+    V^\pi(s) = \sum_a\pi(a|s)|\sum_{s_{t+1}}p(s_{t+1}|s_t,a)\left[r(s,a,s_{t+1}) + \gamma V^\pi(s_{t+1})\right]
+\end{equation}
+\subsection{Hàm chất lượng}
+Có rất nhiều phương pháp có thể thu được chính sách "gần tối ưu", một trong những phương pháp đó là sử dụng một \word{Hàm Chất lượng}{Quality Function}\cite{RLSuttonBook} để đánh giá chất lượng của việc chọn một hành động để thực hiện tại một trạng thái xác định, sẽ được đề cập trong phần \ref{Qlearning}. Hàm chất lượng có định nghĩa tương tự như hàm giá trị khi biết trước hành động được thực thi. Nó bao gồm phần thưởng trong một khoảng thời gian dài khi áp dụng một hành động tại một trạng thái với chính sách xác định\cite{RLSuttonBook}:
+\begin{align}
+    \nonumber
+    Q:S\times A \longrightarrow \mathbb{R}\quad Q^\pi(s,a)&=\mathbb{E}_\pi[R_t|s_t=s, a_t=a]\\
+    &=\mathbb{E}_\pi\left[\sum^\infty_{i=0}\gamma^ir_{t+i+1}\Big| s_t=s, a_t=a\right]
+\end{align}
+
+Nếu một chính sách tối ưu $\pi^*$ đã được xác định thì giá trị của một trạng thái $V^{\pi^*}(s_t)$ bằng với hàm chất lượng $Q^{\pi^*}(s_t,a_t)$ khi thực một hành động tối ưu\cite{RLSuttonBook}:
+\begin{equation}\label{Q-function}
+    s_t\subset D \quad a_t \subset A \quad V^{\pi^*} (s_t)=Q^{\pi^*}(s_t,a_t) = \argmaxA_aQ^{\pi^*}(s_t,a_t)
+\end{equation}
+\vspace{1cm}
+\section{Q-learning}\label{Qlearning}
+Một trong những đột phá trong học tăng cường là sự phát triển của thuật toán \word{Thuật toán kiểm soát sự khác biệt theo thời gian không chính sách}{off-policy TD control algorithm} được biết là \textit{Q-learning} (Watkins, 1989). Sở dĩ Q-learning được xem là thuật toán không chính sách là vì việc ước lượng hàm chất lượng tối ưu độc lập với chính sách hiện thời. Thuật toán chọn một chính sách khác để có thể cập nhật hàm chất lượng tương tự ban đầu.
+\begin{equation}
+    Q:S\times A \longrightarrow \mathbb{R}
+\end{equation}
+\begin{equation}\label{Q-learning update}
+    Q(s_t,a_t)\leftarrow Q(s_t,a_t) + \alpha(r_{t+1} + \gamma \max_aQ(s_{t+1},a_{t+1})-Q(s_t,a_t))
+\end{equation}
+Tham số $\alpha$ trong phương trình \ref{Q-learning update} là \word{Tỷ số học}{Learning rate} $(0<\alpha \le 1)$ và được xác định là tỷ lệ thông tin mới sẽ được ghi đè vào Q-value cũ. $\gamma$ là hệ số chiết khấu $(0<\gamma\le 1)$ sẽ giảm khi ước lượng hàm chất lượng cho các trạng thái về sau.
+\clearpage
+\begin{algorithm}
+\caption{Q-learning}
+\begin{algorithmic}[1]
+\Procedure{Q-Learning}{}
+\State Initialize Q(s,a)=0 for all $a\in A$ và $s \in S$
+\State \textbf{Repeat until the end of the episode:}
+\State {$s_t \longleftarrow$ \textit{Initial state}}
+\For {\textbf{each tập step}}
+\State {Select $a_t$ based on a exploration strategy from $s_t$}
+\State {Take action $a_t$, observe $r_{t+1} , s_{t+1}$}
+\State {$Q(s_t,a_t)\leftarrow Q(s_t,a_t) + \alpha(r_{t+1} + \gamma \max_aQ(s_{t+1},a_{t+1})-Q(s_t,a_t))$}
+\State {$s_t\longleftarrow s_{t+1}$}
+\If{s==terminal}
+\State {\textbf{break}}
+\EndIf
+\EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\section{Chiến thuật Chọn lọc Tham lam $\epsilon$}\label{e-greedy}
+\textit{Khám phá} với \word{Khai phá}{Exploitation}là chủ đề được lặp đi lặp lại trong học tăng cường nói riêng và AI nói chung. Liệu chúng ta nên khai phá để thu được kiến thức hay chúng ta nên khám phá để tìm kiếm đươc policy tốt hơn?\\
+Một phương pháp khả thi, dễ thực hiện và hiệu quả là chọn một hành động theo thời gian được biết như là \word{Chiến thuật Chọn lọc Tham lam $\epsilon$}{$\epsilon$-greedy selection strategy}. Cho trước một hàm chất lượng $Q(s,a)$, hành động tốt được được chọn (hành động nào tối đa được hàm chất lượng tại trạng thái cho trước) với xác suất là $(1-\epsilon)$. Hơn thế nữa, $\epsilon$ nằm trong khoảng không và một $(0<\epsilon\le 1)$ để biểu diễn một xác suất $\epsilon$ chọn hành động ngẫu nhiên để thực hiện. Thuật toán được biếu diễu như sau\cite{RLSuttonBook}:
+\begin{algorithm}[H]
+\caption{$\epsilon$-Greedy Strategy}
+\begin{algorithmic}[1]
+\Procedure{Action = $\epsilon$-Greedy($\epsilon$, s= trạng thái)}{}
+\State Initialize $a_{aux}\in A_s$
+\If{$\epsilon\ge rand(0,1)$}
+\State {Select a random action $a_i \in A_s$ from the action space}
+\State {$a_{aux}=a_i$}
+\Else
+\State Initialize $Q_{aux}=0$
+\For {\textbf{each action $a_i\in A_s$}}
+\State {Compute Q(s,a) based on s=trạng thái}
+\If{$Q(s,a)\ge Q_{aux}$}
+\State $Q_{aux} = Q(s,a_i)$
+\State $a_{aux}=a_i$
+\State \textbf{break}
+\EndIf
+\EndFor
+\EndIf
+\State Return $a_{aux}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}

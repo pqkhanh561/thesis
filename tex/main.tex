@@ -1,0 +1,117 @@
+\documentclass[12pt,oneside]{report}
+\usepackage[a4paper,width=150mm,top=25mm,bottom=25mm]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage[utf8]{vietnam}
+\usepackage{pdfpages}   %Cover page with pdf
+\usepackage{listings}
+\usepackage[numbers]{natbib}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage[nottoc]{tocbibind}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{pifont}
+\usepackage{subcaption} %subfigure
+\usepackage{cases} 
+\usepackage{scrextend}
+\usepackage{marginnote}
+\addtokomafont{labelinglabel}{\sffamily}
+\usepackage{fancyhdr} %Header
+\pagestyle{fancy}
+\fancyhead[RO,LE]{}
+\usepackage{afterpage}
+
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \newpage}
+    
+\raggedbottom
+
+
+
+
+%--------------Define list of some thing ---------%
+\usepackage{tocloft} %define some thing your own
+\newcommand{\listexamplename}{Bảng tham chiếu từ chuyên nghành}
+\newlistof{word}{wor}{\listexamplename}
+\newcommand{\word}[2]{%Số 2 ở đây biểu thị cho số biến truyền vào
+    \refstepcounter{word}%
+    \textit{#1 (#2)}%
+    \addcontentsline{wor}{word}
+    {\protect
+    \begin{tabular}{p{7.2cm}p{5.9cm}}
+        #1 & #2\\
+    \end{tabular}
+    }
+}
+
+
+\DeclareMathOperator*{\argmaxA}{arg\,max} % Jan Hlavacek
+\usepackage{lipsum} %split subfigure
+
+\captionsetup{compatibility=false}
+\renewcommand{\baselinestretch}{1.5}
+\begin{document}
+
+\begin{titlepage} 
+\includepdf{Pic/cover.pdf}
+\end{titlepage}
+\clearpage
+\includepdf[page=-]{Pic/cover_BACKUP.pdf}
+\clearpage
+%---------------------------------------------------------------------------------
+\chapter*{Lời cảm ơn}
+Trong quá trình thực hiện khóa luận, tôi gặp rất nhiều khó khăn từ ý tưởng đến việc thực hiện. Để vượt qua các khó khăn không chỉ nhờ sự nỗ lực tìm hiểu và học tập của bản thân, mà còn có sự giúp đỡ rất lớn từ quý Thầy Cô, bạn bè và gia đình:
+\begin{itemize}
+\item Đầu tiên, tôi rất biết ơn về tận tình từ Thầy hướng dẫn của tôi, Tiến sĩ Huỳnh Thế Đăng. Với nhiều kinh nghiệm trong lĩnh vực máy học, cũng như giảng dạy, Thầy đã mang đến cho tôi nhiều ý tưởng cũng như động lực trong việc thực hiện khóa luận. Tôi thực sự biết ơn khi là một sinh viên của Thầy.
+\item Tiếp theo, khóa luận này không thể thực hiện được khi không có sự hỗ trợ tích cực từ các Thầy cô trong phòng Bộ môn Ứng dụng Tin học khi cung cấp một môi trường học tập với đầy đủ các công cụ cần thiết cho khóa luận.
+\item Cuối cùng, tôi muốn gửi lời cảm ơn đến quý Thầy Cô trong khoa Toán-Tin học, trường Đại học Khoa học Tự nhiên đã tận tình dạy dỗ trong suốt bốn (04) năm học đã truyền đạt những kiến thức hữu ích nhất giúp tôi tích lũy nền tảng cơ bản.
+\end{itemize}
+Trong quá trình thực hiện và hoàn thành khóa luận này, mặc dù có sự cố gắng tối đa nhưng có thể không tránh khỏi sai sót. Vì thế kính mong nhận được sự đóng góp ý kiến từ quý Thầy Cô và các bạn để hoàn thiện hơn.
+
+\begin{flushright}
+{\it Tp.HCM, ngày 29 tháng 08 năm 2020}
+
+Người thực hiện\hskip 2cm\quad
+
+{\bf PHAN QUANG KHÁNH} \hskip 0.5cm \quad\
+ \end{flushright}
+\clearpage
+\tableofcontents
+\clearpage
+\listoffigures 
+\clearpage
+\phantomsection
+\listofword\label{listofword}
+\addcontentsline{toc}{chapter}{Bảng tham chiếu từ chuyên ngành}
+\clearpage
+\chapter{Giới thiệu}
+\input{Chapters/Chapter1}
+
+\chapter{Phương pháp Học Tăng cường}
+\input{Chapters/Chapter2}
+
+\chapter{Các phương pháp áp dụng} \label{Chap3}
+\input{Chapters/Chapter3}
+
+\chapter{Kết quả và thảo luận}\label{Chap4}
+\input{Chapters/Chapter4}
+
+\chapter{Kết luận} 
+\input{Chapters/Chapter5}%
+\clearpage
+\chapter{Đề nghị nghiên cứu thêm}
+\input{Chapters/Chapter6}%
+\medskip
+\afterpage{\blankpage}
+
+
+
+%Imports the bibliography file "main.bib"
+\bibliographystyle{plainnat}
+\bibliography{main}
+\end{document}
