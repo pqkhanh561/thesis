@@ -4,7 +4,6 @@ import math
 from Game import WorldHardestGame 
 
 ACTION_DICT = ['up','down','right','left','stay','reset']
-game = WorldHardestGame()
 
 class action_space():
     def __init__(self, action):
@@ -14,7 +13,7 @@ class action_space():
         return np.random.randint(5)
 
 class env():
-        def __init__(self, number_enemy, action=4, seed=1):
+        def __init__(self, number_enemy, action=4, seed=1, render=True):
                 self.state = None#Include position of agen and position of enemy
                 self.reward = 0
                 self.dead = 0   #1: is dead
@@ -22,19 +21,20 @@ class env():
                 self.num_enemy = number_enemy
                 self.action_space = action_space(5)
                 self.num_win = 0
+                self.game = WorldHardestGame(render==1)
 
         def seed(self, seed):
                 np.random.seed(seed)
                 
         def step(self, action):
-                time.sleep(0.2)
+                if self.game.render: time.sleep(0.2)
                 self.reward = 0
                 self.dead = 0
                 self.win = 0
                 self.state = None
                 #Require: action text need have length 5
                 
-                list_feature = game.run(ACTION_DICT[action], False)
+                list_feature = self.game.run(ACTION_DICT[action], False)
                
                 #msg is contain all feature
                 #2 is position of agent

@@ -18,6 +18,10 @@ from rl.callbacks import FileLogger, ModelIntervalCheckpoint
 import os
 from env import env
 
+
+import warnings
+warnings.filterwarnings("ignore")
+
 #tf.config.gpu.set_per_process_memory_fraction(0.75)
 #tf.config.gpu.set_per_process_memory_growth(True)
 #gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -32,12 +36,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--mode', choices=['train', 'test'], default='train')
 parser.add_argument('--env-name', type=str, default='WHG')
 parser.add_argument('--weights', type=str, default=None)
+parser.add_argument('--render', type=int, default=1)
 args = parser.parse_args()
 #env_name = "WHG"
 
 # Get the environment and extract the number of actions.
 #env = gym.make(args.env_name)
-env = env(4)
+print(args.render)
+env = env(number_enemy=4, action=4, render=args.render)
 np.random.seed(20)
 env.seed(20)
 nb_actions = env.action_space.n
